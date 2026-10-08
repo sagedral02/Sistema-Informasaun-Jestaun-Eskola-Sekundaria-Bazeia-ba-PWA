@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Plus, Printer, CheckCircle2, RotateCcw, FileText, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { DollarSign, Plus, Printer, CheckCircle2, RotateCcw, FileText, ArrowRight, Sparkles, AlertCircle, X } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
 export default function FinancePage() {
@@ -368,26 +368,24 @@ export default function FinancePage() {
 
       {/* Pay Modal */}
       {showPayModal && selectedInvoice && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '480px', padding: '32px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
-              Rejistu Pagamentu Mensalidade
-            </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-              Estudante: <strong>{selectedInvoice.student_name}</strong> • {selectedInvoice.title}
-            </p>
+        <div className="modal-backdrop" onClick={() => setShowPayModal(false)}>
+          <div className="modal-box" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
+                  Rejistu Pagamentu Mensalidade
+                </h3>
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                  Estudante: <strong>{selectedInvoice.student_name}</strong> • {selectedInvoice.title}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPayModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
 
             <form onSubmit={handleSubmitPayment} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
@@ -440,30 +438,17 @@ export default function FinancePage() {
 
       {/* Printable Receipt Modal */}
       {receiptToPrint && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
+        <div className="modal-backdrop" onClick={() => setReceiptToPrint(null)}>
           <div
-            className="glass-panel"
-            style={{
-              width: '100%',
-              maxWidth: '500px',
-              padding: '32px',
-              background: '#ffffff',
-              color: '#0f172a',
-              borderRadius: '12px',
-            }}
+            className="modal-box"
+            style={{ maxWidth: '500px' }}
+            onClick={(e) => e.stopPropagation()}
           >
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+              <button onClick={() => setReceiptToPrint(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={20} color="var(--text-muted)" />
+              </button>
+            </div>
             {/* School Header */}
             <div style={{ textAlign: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '12px', marginBottom: '16px' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700 }}>DIOCESE DE MALIANA</div>
@@ -512,26 +497,21 @@ export default function FinancePage() {
 
       {/* Generate Month Invoices Modal */}
       {showGenModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '440px', padding: '28px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '6px' }}>
-              Jera Konta Mensalidade ba Estudante Hotu
-            </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '18px' }}>
-              Sistema sei jera fatura $15 automátiku ba kada estudante ativu
-            </p>
+        <div className="modal-backdrop" onClick={() => setShowGenModal(false)}>
+          <div className="modal-box" style={{ maxWidth: '440px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '6px' }}>
+                  Jera Konta Mensalidade ba Estudante Hotu
+                </h3>
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                  Sistema sei jera fatura $15 automátiku ba kada estudante ativu
+                </p>
+              </div>
+              <button onClick={() => setShowGenModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={20} color="var(--text-muted)" />
+              </button>
+            </div>
 
             <form onSubmit={handleGenerateInvoices} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>

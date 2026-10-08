@@ -86,83 +86,52 @@ export default function SchedulePage() {
       </div>
 
       {/* Timetable Grid View */}
-      <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '0.825rem' }}>
-          <thead>
-            <tr>
-              <th
-                style={{
-                  padding: '14px',
-                  background: 'rgba(10, 16, 31, 0.9)',
-                  border: '1px solid var(--border-card)',
-                  color: 'var(--gold-light)',
-                  width: '90px',
-                }}
-              >
-                Oras / Períodu
-              </th>
-              {days.map((d) => (
-                <th
-                  key={d.num}
-                  style={{
-                    padding: '14px',
-                    background: 'rgba(10, 16, 31, 0.9)',
-                    border: '1px solid var(--border-card)',
-                    color: 'var(--text-main)',
-                    fontWeight: 700,
-                  }}
-                >
-                  {d.name}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {periods.map((p) => (
-              <tr key={p}>
-                <td
-                  style={{
-                    padding: '14px 8px',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid var(--border-subtle)',
-                    fontWeight: 700,
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  Períodu {p}
-                </td>
-                {days.map((d) => {
-                  const entry = schedules.find((s) => s.day_of_week === d.num && s.period_number === p);
-                  return (
-                    <td
-                      key={d.num}
-                      style={{
-                        padding: '12px',
-                        border: '1px solid var(--border-subtle)',
-                        verticalAlign: 'top',
-                        background: entry ? 'rgba(30, 58, 138, 0.15)' : 'transparent',
-                        height: '75px',
-                      }}
-                    >
-                      {entry ? (
-                        <div
-                          style={{
-                            padding: '8px',
-                            background: 'rgba(245, 158, 11, 0.1)',
-                            border: '1px solid rgba(245, 158, 11, 0.3)',
-                            borderRadius: '6px',
-                            textAlign: 'left',
-                          }}
-                        >
-                          <div style={{ fontWeight: 700, color: '#fef08a' }}>{entry.subject_name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                            {entry.teacher_name}
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <div className="data-table-container">
+          <table className="data-table" style={{ textAlign: 'center' }}>
+            <thead>
+              <tr>
+                <th style={{ width: '120px', textAlign: 'center' }}>Oras / Períodu</th>
+                {days.map((d) => (
+                  <th key={d.num} style={{ textAlign: 'center' }}>{d.name}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {periods.map((p) => (
+                <tr key={p}>
+                  <td style={{ fontWeight: 700, color: 'var(--text-muted)' }}>Períodu {p}</td>
+                  {days.map((d) => {
+                    const entry = schedules.find((s) => s.day_of_week === d.num && s.period_number === p);
+                    return (
+                      <td
+                        key={d.num}
+                        style={{
+                          verticalAlign: 'top',
+                          background: entry ? 'var(--surface-active)' : 'transparent',
+                          height: '85px',
+                        }}
+                      >
+                        {entry ? (
+                          <div
+                            style={{
+                              padding: '8px',
+                              background: '#FFFFFF',
+                              border: '1px solid var(--border-card)',
+                              borderRadius: 'var(--radius-sm)',
+                              textAlign: 'left',
+                              boxShadow: 'var(--shadow-sm)',
+                            }}
+                          >
+                            <div style={{ fontWeight: 800, color: 'var(--primary)' }}>{entry.subject_name}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-main)', marginTop: '2px', fontWeight: 600 }}>
+                              {entry.teacher_name}
+                            </div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              {entry.room_number || 'Sala 01'}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.7rem', color: 'var(--gold-light)', marginTop: '2px' }}>
-                            {entry.room_number || 'Sala 01'}
-                          </div>
-                        </div>
-                      ) : (
+                        ) : (
                         <div style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>-</div>
                       )}
                     </td>
@@ -172,6 +141,7 @@ export default function SchedulePage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -18,15 +18,23 @@ interface SidebarProps {
 const navGroups = [
   {
     label: 'Prinsipál',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'SECRETARY', 'TEACHER', 'HOMEROOM_TEACHER', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'],
     items: [
       { href: '/dashboard', label: TETUN.nav.dashboard, icon: LayoutDashboard },
-      { href: '/dashboard/admisasaun', label: TETUN.nav.admissions, icon: UserPlus },
       { href: '/dashboard/estudante', label: TETUN.nav.students, icon: Users },
-      { href: '/dashboard/mestre', label: 'Mestre & Funsionáriu', icon: GraduationCap },
     ],
   },
   {
+    label: 'Administrasaun',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'SECRETARY'],
+    items: [
+      { href: '/dashboard/admisasaun', label: TETUN.nav.admissions, icon: UserPlus },
+      { href: '/dashboard/mestre', label: 'Mestre & Funsionáriu', icon: GraduationCap },
+    ]
+  },
+  {
     label: 'Akadémiku',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'],
     items: [
       { href: '/dashboard/akademiku', label: TETUN.nav.academics, icon: BookOpenCheck },
       { href: '/dashboard/orariu', label: TETUN.nav.schedule, icon: CalendarDays },
@@ -37,12 +45,14 @@ const navGroups = [
   },
   {
     label: 'Finansas',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'FINANCE_ADMIN'],
     items: [
       { href: '/dashboard/finansas', label: TETUN.nav.finance, icon: DollarSign },
     ],
   },
   {
     label: 'Suportu',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'],
     items: [
       { href: '/dashboard/konsellu', label: TETUN.nav.counseling, icon: HeartHandshake },
       { href: '/dashboard/estrakurrikular', label: TETUN.nav.extracurricular, icon: Activity },
@@ -52,7 +62,8 @@ const navGroups = [
     ],
   },
   {
-    label: 'Administrasaun',
+    label: 'Jestaun Sistema',
+    allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
     items: [
       { href: '/dashboard/dokumentu', label: TETUN.nav.documents, icon: FolderArchive },
       { href: '/dashboard/relatoriu', label: TETUN.nav.reports, icon: BarChart3 },
@@ -128,7 +139,9 @@ export default function Sidebar({ user }: SidebarProps) {
 
       {/* Navigation */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 10px' }}>
-        {navGroups.map((group) => (
+        {navGroups
+          .filter(group => !user?.role || group.allowedRoles.includes(user.role))
+          .map((group) => (
           <div key={group.label} style={{ marginBottom: '18px' }}>
             <div
               style={{

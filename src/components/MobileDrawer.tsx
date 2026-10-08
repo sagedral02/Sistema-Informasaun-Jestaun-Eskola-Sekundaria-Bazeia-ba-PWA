@@ -18,25 +18,25 @@ interface MobileDrawerProps {
 }
 
 const navItems = [
-  { href: '/dashboard', label: TETUN.nav.dashboard, icon: LayoutDashboard, group: 'core' },
-  { href: '/dashboard/admisasaun', label: TETUN.nav.admissions, icon: UserPlus, group: 'core' },
-  { href: '/dashboard/estudante', label: TETUN.nav.students, icon: Users, group: 'core' },
-  { href: '/dashboard/mestre', label: 'Mestre & Funsionáriu', icon: GraduationCap, group: 'core' },
-  { href: '/dashboard/akademiku', label: TETUN.nav.academics, icon: BookOpenCheck, group: 'academic' },
-  { href: '/dashboard/orariu', label: TETUN.nav.schedule, icon: CalendarDays, group: 'academic' },
-  { href: '/dashboard/prezensas', label: TETUN.nav.attendance, icon: CalendarCheck, group: 'academic' },
-  { href: '/dashboard/avaliasaun', label: TETUN.nav.assessments, icon: Award, group: 'academic' },
-  { href: '/dashboard/boletin', label: TETUN.nav.reportCards, icon: FileSpreadsheet, group: 'academic' },
-  { href: '/dashboard/finansas', label: TETUN.nav.finance, icon: DollarSign, group: 'finance' },
-  { href: '/dashboard/konsellu', label: TETUN.nav.counseling, icon: HeartHandshake, group: 'support' },
-  { href: '/dashboard/estrakurrikular', label: TETUN.nav.extracurricular, icon: Activity, group: 'support' },
-  { href: '/dashboard/biblioteka', label: TETUN.nav.library, icon: Library, group: 'support' },
-  { href: '/dashboard/patrimoniu', label: TETUN.nav.assets, icon: Boxes, group: 'support' },
-  { href: '/dashboard/komunikasaun', label: TETUN.nav.communications, icon: Bell, group: 'support' },
-  { href: '/dashboard/dokumentu', label: TETUN.nav.documents, icon: FolderArchive, group: 'admin' },
-  { href: '/dashboard/relatoriu', label: TETUN.nav.reports, icon: BarChart3, group: 'admin' },
-  { href: '/dashboard/audit', label: TETUN.nav.audit, icon: ShieldCheck, group: 'admin' },
-  { href: '/dashboard/konfigurasaun', label: TETUN.nav.settings, icon: Settings, group: 'admin' },
+  { href: '/dashboard', label: TETUN.nav.dashboard, icon: LayoutDashboard, group: 'core', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'SECRETARY', 'TEACHER', 'HOMEROOM_TEACHER', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/admisasaun', label: TETUN.nav.admissions, icon: UserPlus, group: 'core', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'SECRETARY'] },
+  { href: '/dashboard/estudante', label: TETUN.nav.students, icon: Users, group: 'core', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'SECRETARY', 'TEACHER', 'HOMEROOM_TEACHER', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/mestre', label: 'Mestre & Funsionáriu', icon: GraduationCap, group: 'core', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'SECRETARY'] },
+  { href: '/dashboard/akademiku', label: TETUN.nav.academics, icon: BookOpenCheck, group: 'academic', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'] },
+  { href: '/dashboard/orariu', label: TETUN.nav.schedule, icon: CalendarDays, group: 'academic', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'] },
+  { href: '/dashboard/prezensas', label: TETUN.nav.attendance, icon: CalendarCheck, group: 'academic', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'] },
+  { href: '/dashboard/avaliasaun', label: TETUN.nav.assessments, icon: Award, group: 'academic', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'] },
+  { href: '/dashboard/boletin', label: TETUN.nav.reportCards, icon: FileSpreadsheet, group: 'academic', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'CURRICULUM_ADMIN', 'TEACHER', 'HOMEROOM_TEACHER'] },
+  { href: '/dashboard/finansas', label: TETUN.nav.finance, icon: DollarSign, group: 'finance', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'FINANCE_ADMIN'] },
+  { href: '/dashboard/konsellu', label: TETUN.nav.counseling, icon: HeartHandshake, group: 'support', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/estrakurrikular', label: TETUN.nav.extracurricular, icon: Activity, group: 'support', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/biblioteka', label: TETUN.nav.library, icon: Library, group: 'support', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/patrimoniu', label: TETUN.nav.assets, icon: Boxes, group: 'support', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/komunikasaun', label: TETUN.nav.communications, icon: Bell, group: 'support', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'COUNSELOR', 'LIBRARIAN', 'ASSET_OFFICER'] },
+  { href: '/dashboard/dokumentu', label: TETUN.nav.documents, icon: FolderArchive, group: 'admin', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'] },
+  { href: '/dashboard/relatoriu', label: TETUN.nav.reports, icon: BarChart3, group: 'admin', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'] },
+  { href: '/dashboard/audit', label: TETUN.nav.audit, icon: ShieldCheck, group: 'admin', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'] },
+  { href: '/dashboard/konfigurasaun', label: TETUN.nav.settings, icon: Settings, group: 'admin', allowedRoles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'] },
 ];
 
 const groupLabels: Record<string, string> = {
@@ -216,7 +216,7 @@ export default function MobileDrawer({ isOpen, onClose, user }: MobileDrawerProp
         {/* Nav groups */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
           {groups.map((group) => {
-            const items = navItems.filter((i) => i.group === group);
+            const items = navItems.filter((i) => i.group === group && (!user?.role || i.allowedRoles.includes(user.role)));
             if (!items.length) return null;
             return (
               <div key={group} style={{ marginBottom: '14px' }}>

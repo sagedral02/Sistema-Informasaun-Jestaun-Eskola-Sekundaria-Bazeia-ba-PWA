@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Bell, Plus, CheckCircle2, Pin, Send } from 'lucide-react';
+import { Bell, Plus, CheckCircle2, Pin, Send, X } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
 export default function CommunicationPage() {
@@ -101,26 +101,21 @@ export default function CommunicationPage() {
       </div>
 
       {showModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '520px', padding: '32px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
-              Públika Avizu Eskola Foun
-            </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-              Avizu ne'e sei mosu iha painél estudante, mestre, no inan-aman
-            </p>
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-box" style={{ maxWidth: '520px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
+                  Públika Avizu Eskola Foun
+                </h3>
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                  Avizu ne'e sei mosu iha painél estudante, mestre, no inan-aman
+                </p>
+              </div>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={20} color="var(--text-muted)" />
+              </button>
+            </div>
 
             <form onSubmit={handleCreateAnnouncement} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>

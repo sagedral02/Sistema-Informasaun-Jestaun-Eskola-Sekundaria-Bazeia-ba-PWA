@@ -154,11 +154,11 @@ export default function AssessmentGradebookPage() {
         <div
           className="animate-fade-in"
           style={{
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#86efac',
+            background: 'var(--surface-active)',
+            border: '1px solid var(--primary)',
+            color: 'var(--primary)',
             padding: '14px 18px',
-            borderRadius: '10px',
+            borderRadius: 'var(--radius-md)',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
@@ -240,8 +240,8 @@ export default function AssessmentGradebookPage() {
                       <td style={{ fontWeight: 600 }}>{st.full_name}</td>
                       <td>{st.gender}</td>
                       <td style={{ fontWeight: 600 }}>{tpkScore} / 20</td>
-                      <td style={{ fontWeight: 700, color: '#fef08a' }}>{cauScore} / 20</td>
-                      <td style={{ fontWeight: 800, color: '#10b981', fontSize: '1rem' }}>
+                      <td style={{ fontWeight: 700, color: 'var(--primary)' }}>{cauScore} / 20</td>
+                      <td style={{ fontWeight: 800, color: 'var(--success-dark)', fontSize: '1rem' }}>
                         {finalScore}
                       </td>
                       <td>

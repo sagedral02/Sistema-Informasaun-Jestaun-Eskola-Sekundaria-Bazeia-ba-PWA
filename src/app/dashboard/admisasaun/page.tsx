@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Filter, CheckCircle, XCircle, Clock, Plus, Users, GraduationCap } from 'lucide-react';
+import { UserPlus, Search, Filter, CheckCircle, XCircle, Clock, Plus, Users, GraduationCap, X } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
 export default function AdmissionsPage() {
@@ -192,26 +192,24 @@ export default function AdmissionsPage() {
 
       {/* Register Modal */}
       {showModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '32px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
-              Formuláriu Rejistu Kandidatu Foun
-            </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
-              Prenxe dadus pesoál no eskola orijen kandidatu nian
-            </p>
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-box" style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
+                  Formuláriu Rejistu Kandidatu Foun
+                </h3>
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                  Prenxe dadus pesoál no eskola orijen kandidatu nian
+                </p>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
 
             <form onSubmit={handleCreateApplicant} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
