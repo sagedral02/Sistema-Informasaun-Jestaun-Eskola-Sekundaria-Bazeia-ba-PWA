@@ -253,11 +253,11 @@ export default function StudentsPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '8px' }}>
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-card)', paddingBottom: '8px' }}>
         <button
           onClick={() => setActiveTab('list')}
           className={`btn ${activeTab === 'list' ? 'btn-primary' : 'btn-ghost'}`}
-          style={{ borderRadius: 'var(--radius-full)', padding: '8px 18px', fontSize: '0.85rem' }}
+          style={{ padding: '8px 18px', fontSize: '0.85rem' }}
         >
           <Users size={16} />
           <span>Lista Estudante ({students.length})</span>
@@ -269,7 +269,7 @@ export default function StudentsPage() {
             if (!promoData) loadPromotionData();
           }}
           className={`btn ${activeTab === 'promotion' ? 'btn-primary' : 'btn-ghost'}`}
-          style={{ borderRadius: 'var(--radius-full)', padding: '8px 18px', fontSize: '0.85rem' }}
+          style={{ padding: '8px 18px', fontSize: '0.85rem' }}
         >
           <GraduationCap size={16} />
           <span>Promosaun & Graduasaun</span>
@@ -288,7 +288,7 @@ export default function StudentsPage() {
                 placeholder="Buka tuir naran ka númeru estudante..."
                 style={{ paddingLeft: '38px', height: '40px' }}
               />
-              <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '11px' }} />
+              <Search size={18} color="var(--text-faint)" style={{ position: 'absolute', left: '12px', top: '11px' }} />
             </div>
 
             <div style={{ width: '220px' }}>
@@ -323,11 +323,16 @@ export default function StudentsPage() {
                   {students.length > 0 ? (
                     students.map((s) => (
                       <tr key={s.id}>
-                        <td style={{ fontWeight: 700, color: 'var(--gold-light)' }}>{s.student_no}</td>
+                        <td style={{ fontWeight: 700, color: 'var(--primary)', fontVariantNumeric: 'tabular-nums' }}>
+                          {s.student_no}
+                        </td>
                         <td style={{ fontWeight: 600 }}>{s.full_name}</td>
                         <td>{s.gender}</td>
                         <td>
-                          <span className="badge badge-info">{s.classroom_name || 'Seidauk iha Klase'}</span>
+                          <span className="badge badge-open">
+                            <span className="badge-dot" />
+                            <span>{s.classroom_name || 'Seidauk iha Klase'}</span>
+                          </span>
                         </td>
                         <td>{s.major_code || 'CT'}</td>
                         <td>
@@ -335,15 +340,16 @@ export default function StudentsPage() {
                           <div style={{ fontSize: '0.725rem', color: 'var(--text-faint)' }}>{s.guardian_phone || ''}</div>
                         </td>
                         <td>
-                          <span className={`badge ${s.status === 'GRADUADU' ? 'badge-gold' : 'badge-success'}`}>
-                            {s.status}
+                          <span className={`badge ${s.status === 'GRADUADU' ? 'badge-submitted' : 'badge-verified'}`}>
+                            <span className="badge-dot" />
+                            <span>{s.status}</span>
                           </span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <button
                             onClick={() => setSelectedStudent(s)}
                             className="btn btn-secondary"
-                            style={{ padding: '5px 10px', fontSize: '0.75rem' }}
+                            style={{ padding: '4px 10px', fontSize: '0.78rem', minHeight: '32px' }}
                           >
                             <Eye size={13} />
                             <span>Detallu 360</span>
@@ -371,7 +377,7 @@ export default function StudentsPage() {
           {/* Controls Panel */}
           <div className="glass-panel" style={{ padding: '20px' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <GraduationCap size={18} color="var(--gold-primary)" />
+              <GraduationCap size={18} color="var(--primary)" />
               <span>Konfigurasaun Tranzisaun & Promosaun Ano Letivo</span>
             </h3>
 
@@ -434,7 +440,7 @@ export default function StudentsPage() {
                   onClick={loadPromotionData}
                   disabled={loadingPromo}
                   className="btn btn-secondary"
-                  style={{ width: '100%', height: '42px' }}
+                  style={{ width: '100%', height: '40px' }}
                 >
                   <RefreshCw size={14} className={loadingPromo ? 'spin' : ''} />
                   <span>Kalkula Promosaun</span>
@@ -444,9 +450,9 @@ export default function StudentsPage() {
           </div>
 
           {promoSuccessMsg && (
-            <div className="glass-panel" style={{ padding: '14px 20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <CheckCircle2 size={18} color="#10b981" />
-              <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#34d399' }}>{promoSuccessMsg}</span>
+            <div className="glass-panel" style={{ padding: '14px 20px', background: '#ECFDF5', border: '1px solid #A7F3D0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <CheckCircle2 size={18} color="#047857" />
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#047857' }}>{promoSuccessMsg}</span>
             </div>
           )}
 
@@ -455,7 +461,7 @@ export default function StudentsPage() {
             <div className="glass-panel" style={{ padding: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
                 <div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     Rezultadu Avaliasaun: {promoData.currentClass?.name} ({promoRows.length} Estudante)
                   </h4>
                   <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -490,17 +496,20 @@ export default function StudentsPage() {
                     {promoRows.length > 0 ? (
                       promoRows.map((row, idx) => (
                         <tr key={row.student_id}>
-                          <td style={{ fontWeight: 700, color: 'var(--gold-light)' }}>{row.student_no}</td>
+                          <td style={{ fontWeight: 700, color: 'var(--primary)', fontVariantNumeric: 'tabular-nums' }}>
+                            {row.student_no}
+                          </td>
                           <td style={{ fontWeight: 600 }}>{row.full_name}</td>
                           <td>{row.gender}</td>
                           <td>
-                            <span style={{ fontWeight: 700, color: row.average_score >= 10.0 ? '#10b981' : '#ef4444' }}>
+                            <span style={{ fontWeight: 700, color: row.average_score >= 10.0 ? '#047857' : '#B91C1C', fontVariantNumeric: 'tabular-nums' }}>
                               {row.average_score.toFixed(1)} / 20.0
                             </span>
                           </td>
                           <td>
-                            <span className={`badge ${row.recommendation === 'PASSA' ? 'badge-success' : row.recommendation === 'GRADUADU' ? 'badge-gold' : 'badge-danger'}`}>
-                              {row.recommendation}
+                            <span className={`badge ${row.recommendation === 'PASSA' ? 'badge-verified' : row.recommendation === 'GRADUADU' ? 'badge-submitted' : 'badge-arrears'}`}>
+                              <span className="badge-dot" />
+                              <span>{row.recommendation}</span>
                             </span>
                           </td>
                           <td>
@@ -512,7 +521,7 @@ export default function StudentsPage() {
                                   prev.map((r, i) => (i === idx ? { ...r, action: newAction } : r))
                                 );
                               }}
-                              style={{ padding: '6px 10px', height: '34px', fontSize: '0.8rem' }}
+                              style={{ padding: '4px 8px', height: '34px', fontSize: '0.8rem' }}
                             >
                               <option value="PASSA">PASSA (Promote)</option>
                               <option value="RETEIN">RETEIN (Repete)</option>
@@ -521,7 +530,7 @@ export default function StudentsPage() {
                           </td>
                           <td>
                             {row.action === 'GRADUADU' ? (
-                              <span style={{ fontSize: '0.78rem', color: 'var(--gold-light)' }}>Graduadu husi NOSSEF</span>
+                              <span style={{ fontSize: '0.78rem', color: 'var(--primary)', fontWeight: 600 }}>Graduadu husi NOSSEF</span>
                             ) : (
                               <select
                                 value={row.to_classroom_id || promoTargetClassroomId}
@@ -531,7 +540,7 @@ export default function StudentsPage() {
                                     prev.map((r, i) => (i === idx ? { ...r, to_classroom_id: cid } : r))
                                   );
                                 }}
-                                style={{ padding: '6px 10px', height: '34px', fontSize: '0.8rem' }}
+                                style={{ padding: '4px 8px', height: '34px', fontSize: '0.8rem' }}
                               >
                                 <option value="">Padraun ({promoTargetClassroomId ? 'Hili tiha ona' : 'Seidauk'})</option>
                                 {classrooms.map((c) => (
@@ -562,41 +571,49 @@ export default function StudentsPage() {
       {/* Student 360 Detail Modal */}
       {selectedStudent && (
         <div className="modal-backdrop" onClick={() => setSelectedStudent(null)}>
-          <div className="modal-box glass-panel" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div className="modal-box" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid var(--border-card)', paddingBottom: '12px' }}>
               <div>
-                <span className="badge badge-gold">{selectedStudent.student_no}</span>
-                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '6px' }}>{selectedStudent.full_name}</h3>
+                <span className="badge badge-submitted">
+                  <span className="badge-dot" />
+                  <span>{selectedStudent.student_no}</span>
+                </span>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginTop: '6px', color: 'var(--text-main)' }}>
+                  {selectedStudent.full_name}
+                </h3>
               </div>
-              <div className="badge badge-success">{selectedStudent.status}</div>
+              <div className="badge badge-verified">
+                <span className="badge-dot" />
+                <span>{selectedStudent.status}</span>
+              </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid var(--border-card)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Klase & Sala Aula</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{selectedStudent.classroom_name || '-'}</div>
+                <div style={{ fontWeight: 700, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.classroom_name || '-'}</div>
               </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid var(--border-card)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Área / Departamentu</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{selectedStudent.major_name || 'Ciências Naturais'}</div>
+                <div style={{ fontWeight: 700, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.major_name || 'Ciências Naturais'}</div>
               </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid var(--border-card)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Data Moris & Fatin</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{selectedStudent.birth_date} ({selectedStudent.birth_place || 'Railaco'})</div>
+                <div style={{ fontWeight: 600, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.birth_date} ({selectedStudent.birth_place || 'Railaco'})</div>
               </div>
-              <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid var(--border-card)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Enkaregadu (Inan-Aman)</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{selectedStudent.guardian_name || '-'}</div>
+                <div style={{ fontWeight: 600, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.guardian_name || '-'}</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-faint)' }}>{selectedStudent.guardian_phone || ''}</div>
               </div>
             </div>
 
-            <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', marginBottom: '20px' }}>
+            <div style={{ padding: '12px', background: '#F8FAFC', borderRadius: '4px', border: '1px solid var(--border-card)', marginBottom: '18px' }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Hela Fatin (Enderesu)</div>
-              <div style={{ fontWeight: 500, marginTop: '2px' }}>{selectedStudent.address || 'Railaco Vila, Ermera'}</div>
+              <div style={{ fontWeight: 500, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.address || 'Railaco Vila, Ermera'}</div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border-card)', paddingTop: '12px' }}>
               <button onClick={() => setSelectedStudent(null)} className="btn btn-secondary">
                 {TETUN.actions.close}
               </button>
@@ -608,18 +625,25 @@ export default function StudentsPage() {
       {/* Add Student Modal */}
       {showModal && (
         <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-          <div className="modal-box glass-panel" style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
-              Rejistu Estudante Foun
-            </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '18px' }}>
-              Prenxe dadus estudante no atribui ba klase ativu
-            </p>
+          <div className="modal-box" style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid var(--border-card)', paddingBottom: '12px' }}>
+              <div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                  Rejistu Estudante Foun
+                </h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                  Prenxe dadus estudante no atribui ba klase ativu
+                </p>
+              </div>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+            </div>
 
             <form onSubmit={handleCreateStudent} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
-                  Naran Kompletu Estudante
+                  Naran Kompletu Estudante *
                 </label>
                 <input
                   required
@@ -715,7 +739,7 @@ export default function StudentsPage() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px', borderTop: '1px solid var(--border-card)', paddingTop: '14px' }}>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

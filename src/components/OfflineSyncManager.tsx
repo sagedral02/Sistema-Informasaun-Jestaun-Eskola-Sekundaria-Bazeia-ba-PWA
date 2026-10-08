@@ -25,10 +25,7 @@ export default function OfflineSyncManager() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Check offline items in localStorage / IndexedDB queue
     updatePendingCount();
-
-    // Listen to custom event for queue additions
     window.addEventListener('nossef_queue_updated', updatePendingCount);
 
     return () => {
@@ -65,7 +62,7 @@ export default function OfflineSyncManager() {
       setPendingCount(0);
       setIsSyncing(false);
       setSyncSuccessMessage(TETUN.pwa.syncSuccess);
-      setTimeout(() => setSyncSuccessMessage(null), 5000);
+      setTimeout(() => setSyncSuccessMessage(null), 4000);
     } catch (err) {
       console.error('Error syncing offline queue:', err);
       setIsSyncing(false);
@@ -74,55 +71,70 @@ export default function OfflineSyncManager() {
 
   return (
     <>
-      {/* Floating Offline / Sync Status Indicator */}
+      {/* Floating Offline / Sync Status Indicator per Stitch spec */}
       <div className="pwa-status-pill">
         {syncSuccessMessage && (
           <div
-            className="animate-fade-in"
             style={{
-              background: 'rgba(16, 185, 129, 0.95)',
-              color: '#fff',
-              padding: '10px 16px',
-              borderRadius: '10px',
+              background: '#ECFDF5',
+              border: '1px solid #A7F3D0',
+              color: '#047857',
+              padding: '8px 14px',
+              borderRadius: '4px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-              fontSize: '0.85rem',
-              fontWeight: 600,
+              boxShadow: 'var(--shadow-card)',
+              fontSize: '0.825rem',
+              fontWeight: 700,
             }}
           >
-            <CheckCircle2 size={16} />
-            {syncSuccessMessage}
+            <CheckCircle2 size={16} color="#047857" />
+            <span>{syncSuccessMessage}</span>
           </div>
         )}
 
         <div
           style={{
-            background: isOnline ? 'rgba(15, 23, 42, 0.9)' : 'rgba(239, 68, 68, 0.95)',
-            border: `1px solid ${isOnline ? 'rgba(255, 255, 255, 0.15)' : 'rgba(239, 68, 68, 0.4)'}`,
-            backdropFilter: 'blur(10px)',
-            color: '#fff',
-            padding: '8px 14px',
-            borderRadius: '9999px',
+            background: isOnline ? '#FFFFFF' : 'var(--secondary)',
+            border: `1px solid ${isOnline ? '#A7F3D0' : '#475569'}`,
+            color: isOnline ? '#047857' : '#FFFFFF',
+            padding: '6px 14px',
+            borderRadius: 'var(--radius-full)',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+            gap: '8px',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            boxShadow: 'var(--shadow-sticky)',
           }}
         >
           {isOnline ? (
             <>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-              <Wifi size={14} color="#10b981" />
+              <span
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: '#059669',
+                  display: 'inline-block',
+                }}
+              />
+              <Wifi size={14} color="#059669" />
               <span>{TETUN.pwa.onlineStatus}</span>
             </>
           ) : (
             <>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
-              <WifiOff size={14} color="#fff" />
+              <span
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  background: '#EF4444',
+                  display: 'inline-block',
+                }}
+              />
+              <WifiOff size={14} color="#EF4444" />
               <span>{TETUN.pwa.offlineStatus}</span>
             </>
           )}
@@ -132,19 +144,21 @@ export default function OfflineSyncManager() {
               onClick={syncOfflineQueue}
               disabled={!isOnline || isSyncing}
               style={{
-                background: 'rgba(245, 158, 11, 0.3)',
-                border: '1px solid #f59e0b',
-                color: '#fef08a',
+                background: '#FFFBEB',
+                border: '1px solid #FDE68A',
+                color: '#B45309',
                 padding: '3px 8px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
+                borderRadius: '4px',
+                fontSize: '0.72rem',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
+                cursor: 'pointer',
               }}
             >
-              <RefreshCw size={12} className={isSyncing ? 'pulse-glow' : ''} />
-              {pendingCount} {TETUN.pwa.pendingMutations}
+              <RefreshCw size={12} className={isSyncing ? 'spin' : ''} />
+              <span>{pendingCount} Pendente</span>
             </button>
           )}
         </div>

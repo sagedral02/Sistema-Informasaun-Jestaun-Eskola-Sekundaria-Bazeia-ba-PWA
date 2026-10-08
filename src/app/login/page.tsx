@@ -48,97 +48,105 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(circle at 50% 20%, #152238 0%, #080d1a 100%)',
-        padding: '24px',
+        backgroundColor: 'var(--surface-canvas)',
+        padding: '24px 16px',
       }}
     >
-      <div style={{ width: '100%', maxWidth: '460px' }}>
-        {/* Emblem & Title */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+      <div style={{ width: '100%', maxWidth: '440px' }}>
+        {/* Institutional Emblem & Title */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div
             style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)',
-              border: '2px solid var(--border-accent)',
+              width: '56px',
+              height: '56px',
+              borderRadius: '6px',
+              background: 'linear-gradient(135deg, #047857 0%, #064E3B 100%)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: 'var(--shadow-glow)',
-              marginBottom: '16px',
+              boxShadow: 'var(--shadow-card)',
+              marginBottom: '12px',
             }}
           >
-            <Cross size={34} color="#f59e0b" />
+            <Cross size={28} color="#FFFFFF" />
           </div>
           <h1
             style={{
-              fontSize: '1.6rem',
+              fontSize: '1.45rem',
               fontWeight: 800,
               color: 'var(--text-main)',
-              letterSpacing: '-0.01em',
+              letterSpacing: '-0.015em',
             }}
           >
             NOSSEF Railaco
           </h1>
-          <p style={{ fontSize: '0.85rem', color: 'var(--gold-light)', marginTop: '4px' }}>
-            Escola Secundaria Catolica Nossa Senhora de Fatima
+          <p style={{ fontSize: '0.825rem', color: 'var(--primary)', fontWeight: 600, marginTop: '2px' }}>
+            Escola Secundária Católica Nossa Senhora de Fátima
           </p>
-          <p style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
             {TETUN.school.location}
           </p>
         </div>
 
-        {/* Login Card */}
-        <div className="glass-panel" style={{ padding: '32px' }}>
+        {/* Login Card per Stitch Spec */}
+        <div
+          className="glass-panel"
+          style={{
+            padding: '28px',
+            background: '#FFFFFF',
+            border: '1px solid var(--border-card)',
+            borderRadius: 'var(--radius-lg)',
+            boxShadow: 'var(--shadow-card)',
+          }}
+        >
           <h2
             style={{
-              fontSize: '1.2rem',
+              fontSize: '1.15rem',
               fontWeight: 700,
-              marginBottom: '6px',
+              marginBottom: '4px',
               color: 'var(--text-main)',
             }}
           >
             {TETUN.auth.loginTitle}
           </h2>
-          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '24px' }}>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
             {TETUN.auth.loginSubtitle}
           </p>
 
           {error && (
             <div
-              className="animate-fade-in"
               style={{
-                background: 'rgba(239, 68, 68, 0.15)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#fca5a5',
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                color: '#B91C1C',
                 padding: '10px 14px',
-                borderRadius: '8px',
+                borderRadius: '4px',
                 fontSize: '0.825rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                marginBottom: '20px',
+                marginBottom: '18px',
+                fontWeight: 600,
               }}
             >
-              <AlertCircle size={16} />
+              <AlertCircle size={16} color="#B91C1C" />
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label
                 style={{
                   display: 'block',
-                  fontSize: '0.825rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  marginBottom: '6px',
+                  color: 'var(--text-main)',
+                  marginBottom: '5px',
                 }}
               >
                 {TETUN.auth.usernameOrEmail}
@@ -150,11 +158,11 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ezemplu@nossef.edu.tl"
-                  style={{ paddingLeft: '40px' }}
+                  style={{ paddingLeft: '38px', height: '42px' }}
                 />
                 <Mail
-                  size={18}
-                  color="#94a3b8"
+                  size={17}
+                  color="var(--text-faint)"
                   style={{ position: 'absolute', left: '12px', top: '12px' }}
                 />
               </div>
@@ -164,10 +172,10 @@ export default function LoginPage() {
               <label
                 style={{
                   display: 'block',
-                  fontSize: '0.825rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  marginBottom: '6px',
+                  color: 'var(--text-main)',
+                  marginBottom: '5px',
                 }}
               >
                 {TETUN.auth.password}
@@ -179,11 +187,11 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Prenxe lia-fukun..."
-                  style={{ paddingLeft: '40px', paddingRight: '40px' }}
+                  style={{ paddingLeft: '38px', paddingRight: '40px', height: '42px' }}
                 />
                 <Lock
-                  size={18}
-                  color="#94a3b8"
+                  size={17}
+                  color="var(--text-faint)"
                   style={{ position: 'absolute', left: '12px', top: '12px' }}
                 />
                 <button
@@ -193,10 +201,13 @@ export default function LoginPage() {
                     position: 'absolute',
                     right: '12px',
                     top: '12px',
-                    color: '#94a3b8',
+                    color: 'var(--text-faint)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
                   }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </div>
@@ -205,27 +216,29 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="btn btn-primary"
-              style={{ width: '100%', padding: '12px', marginTop: '6px' }}
+              style={{ width: '100%', padding: '10px 16px', minHeight: '44px', marginTop: '4px' }}
             >
               <span>{loading ? 'Prosesa hela...' : TETUN.auth.submitLogin}</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={17} />
             </button>
           </form>
 
           {/* Quick Login Selection for Demonstration */}
-          <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--border-subtle)' }}>
+          <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border-card)' }}>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                marginBottom: '12px',
-                fontSize: '0.775rem',
-                fontWeight: 600,
-                color: 'var(--gold-light)',
+                marginBottom: '10px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
               }}
             >
-              <Sparkles size={14} />
+              <Sparkles size={13} color="var(--primary)" />
               <span>{TETUN.auth.quickLogin}</span>
             </div>
 
@@ -234,7 +247,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('diretor@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 Diretór Eskola
               </button>
@@ -242,7 +255,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('admin@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 TU / Super Admin
               </button>
@@ -250,7 +263,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('finansas@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 Finansas / SPP
               </button>
@@ -258,7 +271,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('mestre.matematika@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 Mestre Titulár
               </button>
@@ -266,7 +279,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('estudante1@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 Estudante 10-CT
               </button>
@@ -274,7 +287,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setQuickUser('enkaregadu1@nossef.edu.tl')}
                 className="btn btn-secondary"
-                style={{ fontSize: '0.75rem', padding: '6px 10px', justifyContent: 'flex-start' }}
+                style={{ fontSize: '0.75rem', padding: '6px 8px', justifyContent: 'flex-start', minHeight: '34px' }}
               >
                 Enkaregadu / Aman
               </button>
@@ -283,12 +296,10 @@ export default function LoginPage() {
         </div>
 
         {/* Back Link */}
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div style={{ textAlign: 'center', marginTop: '18px' }}>
           <Link
             href="/"
-            style={{ fontSize: '0.825rem', color: 'var(--text-muted)', transition: 'color 0.2s' }}
-            onMouseOver={(e) => (e.currentTarget.style.color = 'var(--gold-light)')}
-            onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+            style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}
           >
             ← Fila ba Pájina Inisiál
           </Link>

@@ -79,8 +79,8 @@ export default function Sidebar({ user }: SidebarProps) {
     <aside
       style={{
         width: 'var(--sidebar-width)',
-        background: 'var(--bg-sidebar)',
-        borderRight: '1px solid var(--border-subtle)',
+        background: 'var(--secondary)',
+        borderRight: '1px solid rgba(255, 255, 255, 0.08)',
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
@@ -94,29 +94,33 @@ export default function Sidebar({ user }: SidebarProps) {
       {/* Brand Header */}
       <div
         style={{
-          padding: '22px 18px 18px',
-          borderBottom: '1px solid var(--border-subtle)',
+          padding: '20px 18px 18px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           flexShrink: 0,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
-              width: '42px', height: '42px', borderRadius: '11px',
-              background: 'linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%)',
-              border: '1px solid var(--border-accent)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: 'var(--shadow-glow)', flexShrink: 0,
+              width: '40px',
+              height: '40px',
+              borderRadius: '6px',
+              background: 'linear-gradient(135deg, #047857 0%, #064E3B 100%)',
+              border: '1px solid rgba(167, 243, 208, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            <Cross size={22} color="#f59e0b" />
+            <Cross size={20} color="#FFFFFF" />
           </div>
           <div>
-            <h1 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+            <h1 style={{ fontSize: '0.975rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
               NOSSEF Railaco
             </h1>
-            <p style={{ fontSize: '0.68rem', color: 'var(--gold-light)', fontWeight: 500, marginTop: '1px' }}>
-              Sekundária Katólika • Ermera
+            <p style={{ fontSize: '0.675rem', color: '#94A3B8', fontWeight: 500, marginTop: '2px' }}>
+              Ensino Secundário Geral • Ermera
             </p>
           </div>
         </div>
@@ -126,7 +130,16 @@ export default function Sidebar({ user }: SidebarProps) {
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 10px' }}>
         {navGroups.map((group) => (
           <div key={group.label} style={{ marginBottom: '18px' }}>
-            <div style={{ fontSize: '0.63rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: 'var(--text-faint)', padding: '0 8px 7px' }}>
+            <div
+              style={{
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: '#64748B',
+                padding: '0 8px 6px',
+              }}
+            >
               {group.label}
             </div>
             {group.items.map((item) => {
@@ -137,17 +150,33 @@ export default function Sidebar({ user }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 11px',
-                    borderRadius: '9px', fontSize: '0.835rem', fontWeight: isActive ? 600 : 500,
-                    color: isActive ? '#fef08a' : 'var(--text-muted)',
-                    background: isActive ? 'rgba(245,158,11,0.11)' : 'transparent',
-                    border: isActive ? '1px solid rgba(245,158,11,0.28)' : '1px solid transparent',
-                    transition: 'all 0.13s ease', marginBottom: '2px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    fontSize: '0.835rem',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? '#FFFFFF' : '#94A3B8',
+                    background: isActive ? 'rgba(4, 120, 87, 0.25)' : 'transparent',
+                    border: isActive ? '1px solid rgba(4, 120, 87, 0.5)' : '1px solid transparent',
+                    transition: 'all 0.15s ease',
+                    marginBottom: '2px',
                   }}
                 >
-                  <Icon size={17} color={isActive ? '#f59e0b' : '#94a3b8'} />
+                  <Icon size={17} color={isActive ? '#34D399' : '#64748B'} />
                   <span style={{ flex: 1 }}>{item.label}</span>
-                  {isActive && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--gold-500)', flexShrink: 0 }} />}
+                  {isActive && (
+                    <div
+                      style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        background: '#34D399',
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
                 </Link>
               );
             })}
@@ -156,24 +185,47 @@ export default function Sidebar({ user }: SidebarProps) {
       </div>
 
       {/* User Footer */}
-      <div style={{ padding: '14px', borderTop: '1px solid var(--border-subtle)', background: 'rgba(7,11,20,0.6)', flexShrink: 0 }}>
+      <div
+        style={{
+          padding: '14px 16px',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'rgba(0, 0, 0, 0.2)',
+          flexShrink: 0,
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
             <div
               style={{
-                width: '34px', height: '34px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#000', fontWeight: 700, fontSize: '0.875rem', flexShrink: 0,
+                width: '32px',
+                height: '32px',
+                borderRadius: '4px',
+                background: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                flexShrink: 0,
               }}
             >
               {user?.fullName ? user.fullName[0] : 'U'}
             </div>
             <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-main)' }}>
+              <div
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  color: '#FFFFFF',
+                }}
+              >
                 {user?.fullName || 'Utilizadór Sistema'}
               </div>
-              <div style={{ fontSize: '0.66rem', color: 'var(--gold-light)', fontWeight: 500 }}>
+              <div style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 500 }}>
                 {TETUN.roles[user?.role as keyof typeof TETUN.roles] || user?.role || 'Administrasaun'}
               </div>
             </div>
@@ -181,11 +233,19 @@ export default function Sidebar({ user }: SidebarProps) {
           <button
             onClick={handleLogout}
             title={TETUN.auth.logout}
-            style={{ padding: '8px', borderRadius: '8px', color: '#94a3b8', transition: 'all 0.2s ease', background: 'none', border: 'none', cursor: 'pointer' }}
-            onMouseOver={(e) => (e.currentTarget.style.color = '#ef4444')}
-            onMouseOut={(e) => (e.currentTarget.style.color = '#94a3b8')}
+            style={{
+              padding: '6px',
+              borderRadius: '4px',
+              color: '#94A3B8',
+              transition: 'all 0.15s ease',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.color = '#EF4444')}
+            onMouseOut={(e) => (e.currentTarget.style.color = '#94A3B8')}
           >
-            <LogOut size={17} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>

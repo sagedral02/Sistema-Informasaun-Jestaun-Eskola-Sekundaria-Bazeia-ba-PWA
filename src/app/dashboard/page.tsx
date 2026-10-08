@@ -17,8 +17,8 @@ import {
   ShieldCheck,
   ChevronRight,
   UserCheck,
-  Briefcase,
-  AlertCircle,
+  CheckCircle2,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
@@ -64,28 +64,30 @@ export default function DashboardPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
-      {/* Welcome Banner */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Welcome Institutional Banner */}
       <div
         className="glass-panel"
         style={{
           padding: '24px 28px',
-          background: 'linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%)',
-          border: '1px solid var(--border-accent)',
+          background: '#FFFFFF',
+          border: '1px solid var(--border-card)',
+          borderRadius: 'var(--radius-lg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '18px',
+          gap: '16px',
+          boxShadow: 'var(--shadow-card)',
         }}
       >
         <div>
-          <div className="badge badge-gold" style={{ marginBottom: '8px' }}>
-            <Sparkles size={13} />
-            <span>Ano Letivo 2026/2027 • Trimestre 1</span>
+          <div className="badge badge-verified" style={{ marginBottom: '8px' }}>
+            <span className="badge-dot" />
+            <span>Ano Letivo 2026/2027 • Trimestre 1 (CAU 1)</span>
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.015em' }}>
-            Benvindu ba Painél Prinsipál NOSSEF Railaco
+          <h1 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.015em' }}>
+            Painél Prinsipál NOSSEF Railaco
           </h1>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             Escola Secundária Católica Nossa Senhora de Fátima Railaco — Ermera, Timor-Leste
@@ -104,14 +106,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Responsive KPI Grid */}
+      {/* High-Contrast KPI Grid per Stitch Spec */}
       <div className="grid-kpi">
         {/* Total Estudante */}
         <Link href="/dashboard/estudante" className="stat-card" style={{ textDecoration: 'none' }}>
           <div className="stat-header">
             <span className="stat-label">Total Estudante</span>
-            <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.15)' }}>
-              <Users size={18} color="#3b82f6" />
+            <div className="stat-icon" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+              <Users size={18} color="#2563EB" />
             </div>
           </div>
           <div className="stat-value">{stats.totalStudents}</div>
@@ -124,13 +126,13 @@ export default function DashboardPage() {
         <Link href="/dashboard/mestre" className="stat-card" style={{ textDecoration: 'none' }}>
           <div className="stat-header">
             <span className="stat-label">Mestre & Dosente</span>
-            <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>
-              <GraduationCap size={18} color="#f59e0b" />
+            <div className="stat-icon" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+              <GraduationCap size={18} color="#047857" />
             </div>
           </div>
           <div className="stat-value">{stats.totalTeachers}</div>
           <div className="stat-desc">
-            Korpu Dosente & Homeroom Ativu
+            Korpu Dosente & Wali Klase
           </div>
         </Link>
 
@@ -138,28 +140,30 @@ export default function DashboardPage() {
         <Link href="/dashboard/prezensas" className="stat-card" style={{ textDecoration: 'none' }}>
           <div className="stat-header">
             <span className="stat-label">Taxa Prezensas</span>
-            <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.15)' }}>
-              <CalendarCheck size={18} color="#10b981" />
+            <div className="stat-icon" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+              <CalendarCheck size={18} color="#059669" />
             </div>
           </div>
-          <div className="stat-value" style={{ color: '#10b981' }}>{stats.attendanceRate}%</div>
+          <div className="stat-value" style={{ color: '#047857' }}>
+            {stats.attendanceRate}%
+          </div>
           <div className="stat-desc">
             Prezensas Diária & Aula
           </div>
         </Link>
 
-        {/* Kobra Mensalidade */}
+        {/* Finansas Mensalidade */}
         <Link href="/dashboard/finansas" className="stat-card" style={{ textDecoration: 'none' }}>
           <div className="stat-header">
-            <span className="stat-label">Finansas Mensalidade</span>
-            <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>
-              <DollarSign size={18} color="#f59e0b" />
+            <span className="stat-label">Kobra Mensalidade</span>
+            <div className="stat-icon" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+              <DollarSign size={18} color="#D97706" />
             </div>
           </div>
-          <div className="stat-value" style={{ color: 'var(--gold-light)' }}>
+          <div className="stat-value" style={{ color: '#0F172A' }}>
             ${stats.finance?.totalCollected ? stats.finance.totalCollected.toFixed(2) : '15.00'}
           </div>
-          <div className="stat-desc" style={{ color: '#f87171' }}>
+          <div className="stat-desc" style={{ color: '#DC2626' }}>
             Dívida Pendente: ${stats.finance?.totalArrears ? stats.finance.totalArrears.toFixed(2) : '15.00'}
           </div>
         </Link>
@@ -174,16 +178,27 @@ export default function DashboardPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: '18px',
+              marginBottom: '16px',
+              borderBottom: '1px solid var(--border-card)',
+              paddingBottom: '12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Bell size={18} color="var(--gold-primary)" />
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Avizu & Notifikasaun Eskola</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Bell size={18} color="var(--primary)" />
+              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                Avizu & Notifikasaun Eskola
+              </h2>
             </div>
             <Link
               href="/dashboard/komunikasaun"
-              style={{ fontSize: '0.8rem', color: 'var(--gold-light)', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 600 }}
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontWeight: 700,
+              }}
             >
               <span>Haree Hotu</span>
               <ChevronRight size={14} />
@@ -197,26 +212,30 @@ export default function DashboardPage() {
                   key={a.id}
                   style={{
                     padding: '14px 16px',
-                    borderRadius: 'var(--radius-md)',
-                    background: 'rgba(255, 255, 255, 0.03)',
-                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-sm)',
+                    background: '#F8FAFC',
+                    border: '1px solid var(--border-card)',
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <h4 style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--gold-100)' }}>{a.title}</h4>
-                    <span className="badge badge-gold" style={{ fontSize: '0.7rem' }}>{a.target_audience}</span>
+                    <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                      {a.title}
+                    </h3>
+                    <span className="badge badge-submitted">
+                      <span className="badge-dot" />
+                      <span>{a.target_audience}</span>
+                    </span>
                   </div>
-                  <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  <p style={{ fontSize: '0.825rem', color: 'var(--text-body)', lineHeight: 1.5 }}>
                     {a.content}
                   </p>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-faint)', marginTop: '8px' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: '8px' }}>
                     Públika husi: {a.published_by_name || 'Diretór Eskola'}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="empty-state" style={{ padding: '32px 16px' }}>
-                <Bell size={32} color="var(--text-faint)" />
+              <div style={{ padding: '28px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>
                 <p style={{ fontSize: '0.85rem' }}>La iha avizu foun.</p>
               </div>
             )}
@@ -225,12 +244,21 @@ export default function DashboardPage() {
 
         {/* Quick Shortcuts */}
         <div className="glass-panel" style={{ padding: '22px' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '16px' }}>
+          <h2
+            style={{
+              fontSize: '1rem',
+              fontWeight: 700,
+              marginBottom: '16px',
+              borderBottom: '1px solid var(--border-card)',
+              paddingBottom: '12px',
+              color: 'var(--text-main)',
+            }}
+          >
             Aksaun Lalais (Atallu)
-          </h3>
+          </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <Link href="/dashboard/mestre" className="quick-action-card">
-              <GraduationCap size={18} color="#f59e0b" />
+              <GraduationCap size={18} color="var(--primary)" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Mestre & Funsionáriu</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Jestaun profesór & dosente</div>
@@ -239,7 +267,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/estudante" className="quick-action-card">
-              <Users size={18} color="#3b82f6" />
+              <Users size={18} color="#2563EB" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Estudante & Promosaun</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Perfil 360 & tranzisaun klase</div>
@@ -248,7 +276,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/admisasaun" className="quick-action-card">
-              <UserCheck size={18} color="#10b981" />
+              <UserCheck size={18} color="#059669" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Admisasaun Estudante</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Kandidatu & matríkula foun</div>
@@ -257,7 +285,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/finansas" className="quick-action-card">
-              <DollarSign size={18} color="#10b981" />
+              <DollarSign size={18} color="#D97706" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Kobra Mensalidade</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Selu propinas & resibu</div>
@@ -266,7 +294,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/orariu" className="quick-action-card">
-              <Clock size={18} color="#60a5fa" />
+              <Clock size={18} color="#0284C7" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Oráriu Semanál</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Horáriu aula & profesór</div>
@@ -275,7 +303,7 @@ export default function DashboardPage() {
             </Link>
 
             <Link href="/dashboard/boletin" className="quick-action-card">
-              <BookOpen size={18} color="#a855f7" />
+              <BookOpen size={18} color="#7C3AED" />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>Boletin de Notas</div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Kartaun evaluasaun alunu</div>

@@ -44,9 +44,9 @@ export default function Header({ user }: HeaderProps) {
 
   return (
     <header
-      className="glass-nav"
+      className="desktop-header"
       style={{
-        height: '68px',
+        height: 'var(--header-height)',
         padding: '0 28px',
         display: 'flex',
         alignItems: 'center',
@@ -54,52 +54,57 @@ export default function Header({ user }: HeaderProps) {
         position: 'sticky',
         top: 0,
         zIndex: 30,
+        background: '#FFFFFF',
+        borderBottom: '1px solid var(--border-card)',
       }}
     >
       {/* Left: Academic Year & Trimester Indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid var(--border-card)',
-            padding: '6px 14px',
-            borderRadius: 'var(--radius-full)',
+            background: 'var(--surface-muted)',
+            border: '1px solid var(--border-strong)',
+            padding: '5px 12px',
+            borderRadius: 'var(--radius-sm)',
             fontSize: '0.8rem',
             fontWeight: 600,
+            color: 'var(--text-main)',
           }}
         >
-          <Calendar size={14} color="#f59e0b" />
+          <Calendar size={14} color="var(--primary)" />
           <span>Tinan Akadémiku 2026/2027</span>
           <span style={{ color: 'var(--text-faint)' }}>•</span>
-          <span style={{ color: '#fcd34d' }}>Trimestre 1 (CAU 1)</span>
+          <span style={{ color: 'var(--primary)', fontWeight: 700 }}>Trimestre 1 (CAU 1)</span>
         </div>
 
-        <div className="badge badge-success">
+        <div className="badge badge-verified">
+          <span className="badge-dot" />
           <span>{TETUN.status.active}</span>
         </div>
       </div>
 
       {/* Right: Quick Role Switcher (Demo) & Profile */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Sparkles size={14} color="#f59e0b" />
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Muda Kargu (Demo):</span>
+          <Sparkles size={14} color="var(--primary)" />
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Muda Kargu:</span>
           <select
             disabled={switching}
             onChange={(e) => handleQuickSwitch(e.target.value)}
             value={user?.email || ''}
             style={{
-              padding: '6px 10px',
-              fontSize: '0.775rem',
-              borderRadius: '8px',
-              background: 'rgba(18, 27, 48, 0.9)',
-              borderColor: 'var(--border-accent)',
-              color: '#fef08a',
+              padding: '4px 8px',
+              fontSize: '0.78rem',
+              borderRadius: '4px',
+              background: '#FFFFFF',
+              borderColor: 'var(--border-strong)',
+              color: 'var(--text-main)',
               cursor: 'pointer',
               width: 'auto',
+              minHeight: '34px',
             }}
           >
             {demoUsers.map((du) => (
@@ -116,27 +121,28 @@ export default function Header({ user }: HeaderProps) {
           title={TETUN.nav.communications}
           style={{
             position: 'relative',
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid var(--border-subtle)',
+            width: '36px',
+            height: '36px',
+            borderRadius: '4px',
+            background: 'var(--surface-muted)',
+            border: '1px solid var(--border-strong)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--text-muted)',
+            color: 'var(--text-body)',
+            cursor: 'pointer',
           }}
         >
-          <Bell size={18} />
+          <Bell size={16} />
           <span
             style={{
               position: 'absolute',
-              top: '8px',
-              right: '8px',
-              width: '8px',
-              height: '8px',
+              top: '6px',
+              right: '6px',
+              width: '7px',
+              height: '7px',
               borderRadius: '50%',
-              background: '#f59e0b',
+              background: 'var(--crimson)',
             }}
           />
         </button>
@@ -147,32 +153,32 @@ export default function Header({ user }: HeaderProps) {
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            paddingLeft: '8px',
-            borderLeft: '1px solid var(--border-subtle)',
+            paddingLeft: '6px',
+            borderLeft: '1px solid var(--border-card)',
           }}
         >
           <div
             style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+              width: '32px',
+              height: '32px',
+              borderRadius: '4px',
+              background: 'var(--primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#fff',
+              color: '#FFFFFF',
               fontWeight: 700,
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
             }}
           >
             {user?.fullName ? user.fullName[0] : 'U'}
           </div>
-          <div>
-            <div style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-main)' }}>
-              {user?.fullName || 'Utilizadór'}
+          <div style={{ lineHeight: 1.2 }}>
+            <div style={{ fontSize: '0.825rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              {user?.fullName || 'Utilizadór Sistema'}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              {user?.role ? TETUN.roles[user.role as keyof typeof TETUN.roles] || user.role : 'Utilizadór'}
+              {TETUN.roles[user?.role as keyof typeof TETUN.roles] || user?.role || 'Administrasaun'}
             </div>
           </div>
         </div>

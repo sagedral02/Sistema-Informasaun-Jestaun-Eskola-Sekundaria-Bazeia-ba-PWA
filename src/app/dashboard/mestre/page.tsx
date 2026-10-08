@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -7,18 +7,6 @@ import {
   Star, UserCheck, X, Briefcase
 } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
-
-const statusColors: Record<string, string> = {
-  ACTIVE: 'success',
-  INACTIVE: 'neutral',
-  LEAVE: 'warning',
-  ENDED: 'danger',
-};
-const typeColors: Record<string, string> = {
-  FULL_TIME: 'info',
-  PART_TIME: 'warning',
-  CONTRACT: 'neutral',
-};
 
 export default function MestrePage() {
   const [teachers, setTeachers] = useState<any[]>([]);
@@ -29,8 +17,6 @@ export default function MestrePage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [migrating, setMigrating] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -58,11 +44,9 @@ export default function MestrePage() {
   }, [search, filterStatus, filterType]);
 
   async function initAndLoad() {
-    setMigrating(true);
     try {
       await fetch('/api/teachers/migrate', { method: 'POST' });
     } catch {}
-    setMigrating(false);
     await loadTeachers();
   }
 
@@ -144,6 +128,30 @@ export default function MestrePage() {
     setShowModal(true);
   };
 
+  const exportTeachersCSV = () => {
+    const headers = ['Naran Kompletu', 'Nu. Empregado', 'NIP', 'Sexo', 'Estadu', 'Tipu', 'Espesializasaun', 'Kualifikasaun', 'Telefone', 'Email'];
+    const rows = teachers.map((t) => [
+      `"${t.full_name || ''}"`,
+      `"${t.employee_no || ''}"`,
+      `"${t.nip || ''}"`,
+      `"${t.gender || ''}"`,
+      `"${t.employment_status || ''}"`,
+      `"${t.employment_type || ''}"`,
+      `"${t.specialization || ''}"`,
+      `"${t.qualification || ''}"`,
+      `"${t.phone || ''}"`,
+      `"${t.email || ''}"`,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `NOSSEF_Mestre_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const stats = {
     total: teachers.length,
     active: teachers.filter(t => t.employment_status === 'ACTIVE').length,
@@ -151,36 +159,23 @@ export default function MestrePage() {
     fullTime: teachers.filter(t => t.employment_type === 'FULL_TIME').length,
   };
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div className="skeleton" style={{ height: '60px', borderRadius: 'var(--radius-lg)' }} />
-        <div className="grid-kpi">
-          {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: '100px', borderRadius: 'var(--radius-lg)' }} />)}
-        </div>
-        <div className="skeleton" style={{ height: '300px', borderRadius: 'var(--radius-lg)' }} />
-      </div>
-    );
-  }
-
   return (
-    <div className="animate-fade-in-up" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Page Header */}
       <div className="page-header">
         <div>
           <h1 className="page-header-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <GraduationCap size={24} color="var(--gold-500)" />
-            Mestre & Funsionáriu
+            <GraduationCap size={24} color="var(--primary)" />
+            <span>Mestre & Funsionáriu</span>
           </h1>
-          <p className="page-header-sub">Jere dadus korpu dosente no funsionáriu administrativu NOSSEF Railaco</p>
+          <p className="page-header-sub">
+            Jere dadus korpu dosente no funsionáriu administrativu NOSSEF Railaco
+          </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={() => { /* export CSV */ }}
-          >
+          <button className="btn btn-secondary" onClick={exportTeachersCSV}>
             <Download size={15} />
-            <span>Esporta</span>
+            <span>Esporta CSV</span>
           </button>
           <button
             className="btn btn-primary"
@@ -195,75 +190,70 @@ export default function MestrePage() {
       {/* KPI Cards */}
       <div className="grid-kpi">
         <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="stat-label">Total Mestre</div>
-              <div className="stat-value" style={{ color: 'var(--text-main)' }}>{stats.total}</div>
-              <div className="stat-sub">Korpu dosente rejistadu</div>
-            </div>
-            <div className="stat-icon" style={{ background: 'rgba(245,158,11,0.15)' }}>
-              <Users size={22} color="var(--gold-500)" />
+          <div className="stat-header">
+            <span className="stat-label">Total Mestre</span>
+            <div className="stat-icon" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+              <Users size={18} color="#2563EB" />
             </div>
           </div>
+          <div className="stat-value">{stats.total}</div>
+          <div className="stat-desc">Korpu dosente rejistadu</div>
         </div>
+
         <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="stat-label">Mestre Ativu</div>
-              <div className="stat-value" style={{ color: 'var(--success)' }}>{stats.active}</div>
-              <div className="stat-sub">Estadu ativu</div>
-            </div>
-            <div className="stat-icon" style={{ background: 'rgba(16,185,129,0.15)' }}>
-              <CheckCircle2 size={22} color="var(--success)" />
+          <div className="stat-header">
+            <span className="stat-label">Mestre Ativu</span>
+            <div className="stat-icon" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+              <CheckCircle2 size={18} color="#047857" />
             </div>
           </div>
+          <div className="stat-value" style={{ color: '#047857' }}>{stats.active}</div>
+          <div className="stat-desc">Estadu ativu iha aula</div>
         </div>
+
         <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="stat-label">Titulár de Turma</div>
-              <div className="stat-value" style={{ color: 'var(--blue-400)' }}>{stats.homeroom}</div>
-              <div className="stat-sub">Mestre wali kelas</div>
-            </div>
-            <div className="stat-icon" style={{ background: 'rgba(59,130,246,0.15)' }}>
-              <Star size={22} color="var(--blue-400)" />
+          <div className="stat-header">
+            <span className="stat-label">Titulár de Turma</span>
+            <div className="stat-icon" style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+              <Star size={18} color="#059669" />
             </div>
           </div>
+          <div className="stat-value" style={{ color: '#059669' }}>{stats.homeroom}</div>
+          <div className="stat-desc">Mestre wali klase</div>
         </div>
+
         <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div className="stat-label">Full-Time</div>
-              <div className="stat-value" style={{ color: 'var(--gold-300)' }}>{stats.fullTime}</div>
-              <div className="stat-sub">Mestre tetap / kontrato</div>
-            </div>
-            <div className="stat-icon" style={{ background: 'rgba(245,158,11,0.15)' }}>
-              <Briefcase size={22} color="var(--gold-400)" />
+          <div className="stat-header">
+            <span className="stat-label">Full-Time</span>
+            <div className="stat-icon" style={{ background: '#F1F5F9', border: '1px solid #CBD5E1' }}>
+              <Briefcase size={18} color="#0F172A" />
             </div>
           </div>
+          <div className="stat-value">{stats.fullTime}</div>
+          <div className="stat-desc">Mestre permanente / kontratu</div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
-          <Search size={16} color="var(--text-faint)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+      {/* Filters Bar */}
+      <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+          <Search size={16} color="var(--text-faint)" style={{ position: 'absolute', left: '12px', top: '12px', pointerEvents: 'none' }} />
           <input
             type="text"
             placeholder="Buka naran mestre, NIP, ka nómeru empregadu..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            style={{ paddingLeft: '38px' }}
+            style={{ paddingLeft: '38px', height: '40px' }}
           />
         </div>
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ width: 'auto', minWidth: '150px' }}>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ width: 'auto', minWidth: '150px', height: '40px' }}>
           <option value="">Hotu-hotu Estadu</option>
           <option value="ACTIVE">Ativu</option>
           <option value="INACTIVE">Inativu</option>
           <option value="LEAVE">Ona Lisensa</option>
           <option value="ENDED">Ona Finaliza</option>
         </select>
-        <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ width: 'auto', minWidth: '140px' }}>
+        <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ width: 'auto', minWidth: '140px', height: '40px' }}>
           <option value="">Tipu Hotu-hotu</option>
           <option value="FULL_TIME">Full-Time</option>
           <option value="PART_TIME">Part-Time</option>
@@ -271,93 +261,112 @@ export default function MestrePage() {
         </select>
       </div>
 
-      {/* Teachers Grid / List */}
+      {/* Teachers Grid */}
       {teachers.length === 0 ? (
-        <div className="glass-panel empty-state">
-          <GraduationCap size={40} color="var(--text-faint)" />
-          <p>Seidauk iha dadus mestre. Rejistu mestre foun liu husi botaun acima.</p>
+        <div className="glass-panel" style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <GraduationCap size={44} color="var(--text-faint)" style={{ margin: '0 auto 12px' }} />
+          <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
+            {loading ? 'Hein ruma...' : 'Seidauk iha dadus mestre. Rejistu mestre foun liu husi botaun acima.'}
+          </p>
           <button className="btn btn-primary" onClick={() => { setSelectedTeacher(null); resetForm(); setShowModal(true); }}>
             <Plus size={16} />
-            Rejistu Mestre Foun
+            <span>Rejistu Mestre Foun</span>
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '16px' }}>
           {teachers.map((t) => (
             <div
               key={t.id}
               className="glass-panel"
-              style={{ padding: '20px', transition: 'all 0.2s ease', cursor: 'pointer' }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--border-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border-card)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              style={{
+                padding: '18px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+              }}
             >
-              {/* Teacher avatar + name */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: `linear-gradient(135deg, ${t.gender === 'Feto' ? '#ec4899, #be185d' : '#1e3a8a, #3b82f6'})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
-                  {t.full_name ? t.full_name[0] : 'M'}
-                </div>
-                <div style={{ overflow: 'hidden' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {t.full_name}
+              <div>
+                {/* Teacher avatar + name */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '4px',
+                      background: t.gender === 'Feto' ? '#DB2777' : 'var(--primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#FFFFFF',
+                      fontWeight: 800,
+                      fontSize: '1.05rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {t.full_name ? t.full_name[0] : 'M'}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    {t.specialization || 'Mestre Jenerál'}
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {t.full_name}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1px' }}>
+                      {t.specialization || 'Mestre Jenerál'}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Status badges */}
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
-                <span className={`badge badge-${statusColors[t.employment_status] || 'neutral'}`}>
-                  {t.employment_status === 'ACTIVE' ? 'Ativu' : t.employment_status}
-                </span>
-                <span className={`badge badge-${typeColors[t.employment_type] || 'neutral'}`}>
-                  {t.employment_type === 'FULL_TIME' ? 'Full-Time' : t.employment_type || 'Kontrato'}
-                </span>
-                {t.is_homeroom_teacher && (
-                  <span className="badge badge-gold">
-                    <Star size={10} />
-                    Titulár
+                {/* Status badges */}
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                  <span className={`badge ${t.employment_status === 'ACTIVE' ? 'badge-verified' : 'badge-draft'}`}>
+                    <span className="badge-dot" />
+                    <span>{t.employment_status === 'ACTIVE' ? 'Ativu' : t.employment_status}</span>
                   </span>
-                )}
-              </div>
+                  <span className="badge badge-submitted">
+                    <span className="badge-dot" />
+                    <span>{t.employment_type === 'FULL_TIME' ? 'Full-Time' : t.employment_type || 'Kontrato'}</span>
+                  </span>
+                  {t.is_homeroom_teacher && (
+                    <span className="badge badge-verified">
+                      <Star size={10} />
+                      <span>Titulár</span>
+                    </span>
+                  )}
+                </div>
 
-              {/* Info rows */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-                {t.homeroom_class_name && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <BookOpen size={14} color="var(--gold-400)" />
-                    <span>Titulár de <strong style={{ color: 'var(--gold-300)' }}>{t.homeroom_class_name}</strong></span>
-                  </div>
-                )}
-                {t.phone && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <Phone size={14} />
-                    <span>{t.phone}</span>
-                  </div>
-                )}
-                {t.qualification && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <Award size={14} color="var(--blue-400)" />
-                    <span>{t.qualification}</span>
-                  </div>
-                )}
-                {t.teaching_assignment_count > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <Clock size={14} />
-                    <span>{t.teaching_assignment_count} penugasan aktif</span>
-                  </div>
-                )}
+                {/* Info rows */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px', fontSize: '0.8rem', color: 'var(--text-body)' }}>
+                  {t.homeroom_class_name && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <BookOpen size={14} color="var(--primary)" />
+                      <span>Titulár de <strong>{t.homeroom_class_name}</strong></span>
+                    </div>
+                  )}
+                  {t.phone && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
+                      <Phone size={14} />
+                      <span>{t.phone}</span>
+                    </div>
+                  )}
+                  {t.qualification && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)' }}>
+                      <Award size={14} color="#0284C7" />
+                      <span>{t.qualification}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Actions */}
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="btn btn-secondary btn-sm" onClick={() => openEdit(t)} style={{ flex: 1 }}>
+              <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid var(--border-card)', paddingTop: '12px' }}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => openEdit(t)}
+                  style={{ flex: 1, height: '36px', fontSize: '0.78rem' }}
+                >
                   <Edit size={14} />
-                  Edita
-                </button>
-                <button className="btn btn-ghost btn-sm btn-icon" title="Haree detallu">
-                  <Eye size={16} />
+                  <span>Edita</span>
                 </button>
               </div>
             </div>
@@ -367,116 +376,156 @@ export default function MestrePage() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) { setShowModal(false); setSelectedTeacher(null); }}}>
-          <div className="modal-box">
-            <div className="modal-header">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <GraduationCap size={20} color="var(--gold-500)" />
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '580px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid var(--border-card)', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '4px', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <GraduationCap size={18} color="#FFFFFF" />
                 </div>
                 <div>
-                  <h2 style={{ fontSize: '1.05rem', fontWeight: 700 }}>
+                  <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-main)' }}>
                     {selectedTeacher ? 'Edita Dadus Mestre' : 'Rejistu Mestre Foun'}
                   </h2>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>Prenxe formuláriu konpletu</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    Formuláriu korpu dosente NOSSEF Railaco
+                  </p>
                 </div>
               </div>
-              <button className="btn btn-ghost btn-icon" onClick={() => { setShowModal(false); setSelectedTeacher(null); }}>
-                <X size={18} />
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              >
+                <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div className="form-group">
-                  <label>Naran Kompletu *</label>
-                  <input type="text" value={form.full_name} onChange={e => setForm({...form, full_name: e.target.value})} placeholder="ex: Pe. João Baptista, SJ" required />
-                </div>
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label>Nómeru NIP / ID Funsionáriu</label>
-                    <input type="text" value={form.nip} onChange={e => setForm({...form, nip: e.target.value})} placeholder="ex: 19820415..." />
-                  </div>
-                  <div className="form-group">
-                    <label>Nómeru Empregadu</label>
-                    <input type="text" value={form.employee_no} onChange={e => setForm({...form, employee_no: e.target.value})} placeholder="ex: EMP-001" />
-                  </div>
-                </div>
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label>Seksus</label>
-                    <select value={form.gender} onChange={e => setForm({...form, gender: e.target.value})}>
-                      <option value="Mane">Mane (Masculino)</option>
-                      <option value="Feto">Feto (Feminino)</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Estadu Emprego</label>
-                    <select value={form.employment_status} onChange={e => setForm({...form, employment_status: e.target.value})}>
-                      <option value="ACTIVE">Ativu</option>
-                      <option value="INACTIVE">Inativu</option>
-                      <option value="LEAVE">Ona Lisensa</option>
-                      <option value="ENDED">Finaliza</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label>Tipu Kontrato</label>
-                    <select value={form.employment_type} onChange={e => setForm({...form, employment_type: e.target.value})}>
-                      <option value="FULL_TIME">Full-Time (Tetap)</option>
-                      <option value="PART_TIME">Part-Time (Parsiál)</option>
-                      <option value="CONTRACT">Kontrato Temporáriu</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Data Hahu Servisu</label>
-                    <input type="date" value={form.join_date} onChange={e => setForm({...form, join_date: e.target.value})} />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>Espesializasaun / Matéria Ensinu</label>
-                  <input type="text" value={form.specialization} onChange={e => setForm({...form, specialization: e.target.value})} placeholder="ex: Matemátika, Fízika, Língua Portuguesa..." />
-                </div>
-                <div className="form-group">
-                  <label>Kualifikasaun Akadémiku</label>
-                  <select value={form.qualification} onChange={e => setForm({...form, qualification: e.target.value})}>
-                    <option value="Lisensiatúra (S1)">Lisensiatúra (S1)</option>
-                    <option value="Mestrádu (S2)">Mestrádu (S2)</option>
-                    <option value="Doturádu (S3)">Doturádu (S3)</option>
-                    <option value="D3 / Diploma">D3 / Diploma</option>
-                    <option value="SMA / Ensinu Sekundáriu">SMA / Ensinu Sekundáriu</option>
-                  </select>
-                </div>
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label>Telemóvel / Whatsapp</label>
-                    <input type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+670 7712 0000" />
-                  </div>
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="nome@nossef.edu.tl" />
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', background: 'rgba(245,158,11,0.08)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-accent)' }}>
-                  <input
-                    type="checkbox"
-                    id="is_homeroom"
-                    checked={form.is_homeroom_teacher}
-                    onChange={e => setForm({...form, is_homeroom_teacher: e.target.checked})}
-                    style={{ width: '18px', height: '18px', minHeight: 'unset', cursor: 'pointer' }}
-                  />
-                  <label htmlFor="is_homeroom" style={{ margin: 0, color: 'var(--gold-300)', cursor: 'pointer' }}>
-                    <Star size={14} style={{ display: 'inline', marginRight: '5px' }} />
-                    Mestre Titulár de Turma (Wali Kelas)
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                  Naran Kompletu *
+                </label>
+                <input
+                  required
+                  placeholder="Ez: Mestre Lourenço da Silva"
+                  value={form.full_name}
+                  onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Nu. Empregado
                   </label>
+                  <input
+                    placeholder="Ez: EMP-2026-001"
+                    value={form.employee_no}
+                    onChange={(e) => setForm({ ...form, employee_no: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    NIP (Kazu Funsionáriu Estadu)
+                  </label>
+                  <input
+                    placeholder="Ez: 19850101..."
+                    value={form.nip}
+                    onChange={(e) => setForm({ ...form, nip: e.target.value })}
+                  />
                 </div>
               </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); setSelectedTeacher(null); }}>
-                  Kansela
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Sexo
+                  </label>
+                  <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
+                    <option value="Mane">Mane</option>
+                    <option value="Feto">Feto</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Kualifikasaun
+                  </label>
+                  <select value={form.qualification} onChange={(e) => setForm({ ...form, qualification: e.target.value })}>
+                    <option value="Lisensiatúra (S1)">Lisensiatúra (S1)</option>
+                    <option value="Mestradu (S2)">Mestradu (S2)</option>
+                    <option value="Doutoramentu (S3)">Doutoramentu (S3)</option>
+                    <option value="Bacharelato (D3)">Bacharelato (D3)</option>
+                    <option value="Sekundáriu">Sekundáriu</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Estadu Empregu
+                  </label>
+                  <select value={form.employment_status} onChange={(e) => setForm({ ...form, employment_status: e.target.value })}>
+                    <option value="ACTIVE">Ativu</option>
+                    <option value="INACTIVE">Inativu</option>
+                    <option value="LEAVE">Lisensa</option>
+                    <option value="ENDED">Finaliza</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Tipu Kontratu
+                  </label>
+                  <select value={form.employment_type} onChange={(e) => setForm({ ...form, employment_type: e.target.value })}>
+                    <option value="FULL_TIME">Full-Time (Permanente)</option>
+                    <option value="PART_TIME">Part-Time (Horista)</option>
+                    <option value="CONTRACT">Kontrato</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Espesializasaun / Disiplina
+                  </label>
+                  <input
+                    placeholder="Ez: Matemátika & Fízika"
+                    value={form.specialization}
+                    onChange={(e) => setForm({ ...form, specialization: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                    Telefone
+                  </label>
+                  <input
+                    placeholder="+670 7712 3456"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+                <input
+                  type="checkbox"
+                  id="homeroom"
+                  checked={form.is_homeroom_teacher}
+                  onChange={(e) => setForm({ ...form, is_homeroom_teacher: e.target.checked })}
+                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+                <label htmlFor="homeroom" style={{ fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
+                  Atribui nu&#39;udar Mestre Titulár de Turma (Wali Klase)
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px', borderTop: '1px solid var(--border-card)', paddingTop: '14px' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  {TETUN.actions.cancel}
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? 'Rai hela...' : selectedTeacher ? 'Atualiza Dadus' : 'Rai Mestre Foun'}
+                <button type="submit" disabled={submitting} className="btn btn-primary">
+                  {submitting ? 'Rai hela...' : (selectedTeacher ? 'Atualiza' : 'Rejistu')}
                 </button>
               </div>
             </form>
