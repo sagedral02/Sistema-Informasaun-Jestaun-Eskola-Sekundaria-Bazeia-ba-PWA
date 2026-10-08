@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import {
   Users, Search, Plus, GraduationCap, Phone, Mail, Award,
   BookOpen, CheckCircle2, Clock, Filter, Download, Edit, Eye,
-  Star, UserCheck, X, Briefcase
+  Star, UserCheck, X, Briefcase, FileSpreadsheet, Upload, ShieldCheck
 } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
+import ExcelPautaUploadModal from '@/components/ExcelPautaUploadModal';
 
 export default function MestrePage() {
+  const [activeTab, setActiveTab] = useState<'teachers' | 'homeroom'>('teachers');
   const [teachers, setTeachers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -17,6 +19,10 @@ export default function MestrePage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // Excel Pauta Modal states
+  const [showPautaModal, setShowPautaModal] = useState(false);
+  const [pautaClassroomId, setPautaClassroomId] = useState('');
 
   // Form state
   const [form, setForm] = useState({
@@ -234,18 +240,39 @@ export default function MestrePage() {
         </div>
       </div>
 
-      {/* Filters Bar */}
-      <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
-          <Search size={16} color="var(--text-faint)" style={{ position: 'absolute', left: '12px', top: '12px', pointerEvents: 'none' }} />
-          <input
-            type="text"
-            placeholder="Buka naran mestre, NIP, ka nómeru empregadu..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ paddingLeft: '38px', height: '40px' }}
-          />
-        </div>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '10px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px' }}>
+        <button
+          onClick={() => setActiveTab('teachers')}
+          className={`btn ${activeTab === 'teachers' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          <GraduationCap size={16} />
+          <span>Korpu Dosente & Mestre ({teachers.length})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('homeroom')}
+          className={`btn ${activeTab === 'homeroom' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          <Star size={16} />
+          <span>Profesor da Turma (Titulár de Turma & Rombel)</span>
+        </button>
+      </div>
+
+      {/* Tab 1: Teachers List */}
+      {activeTab === 'teachers' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Filters Bar */}
+          <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+              <Search size={16} color="var(--text-faint)" style={{ position: 'absolute', left: '12px', top: '12px', pointerEvents: 'none' }} />
+              <input
+                type="text"
+                placeholder="Buka naran mestre, NIP, ka nómeru empregadu..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ paddingLeft: '38px', height: '40px' }}
+              />
+            </div>
         <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ width: 'auto', minWidth: '150px', height: '40px' }}>
           <option value="">Hotu-hotu Estadu</option>
           <option value="ACTIVE">Ativu</option>
@@ -371,6 +398,87 @@ export default function MestrePage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* Tab 2: Homeroom Teachers (Profesor da Turma & Rombel) */}
+      {activeTab === 'homeroom' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="glass-panel" style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                Rombongan Belajar & Mestre Titulár de Turma (Ano Letivo 2026/2027)
+              </h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Estrutura ofisiál 7 rombel NOSSEF Railaco (10º CT-A, 10º CT-B, 10º CSH, 11º CT, 11º CSH, 12º CT, 12º CSH)
+              </p>
+            </div>
+            <button
+              onClick={() => { setPautaClassroomId(''); setShowPautaModal(true); }}
+              className="btn btn-primary"
+            >
+              <FileSpreadsheet size={16} />
+              <span>Upload Valor Turma (Excel)</span>
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            {[
+              { id: '10-CT-A', code: '10º CT-A', name: '10.º Ano CT-A', major: 'Ciências Naturais (CT)', teacher: 'Mestre Domingos da Costa', spec: 'Matemátika & Fízika', room: 'Sala 01 - S. Inácio de Loyola', students: 35, chefe: 'António Soares Guterres', contact: '+670 7711 0006' },
+              { id: '10-CT-B', code: '10º CT-B', name: '10.º Ano CT-B', major: 'Ciências Naturais (CT)', teacher: 'Mestre Lourenço dos Santos', spec: 'Fízika & Kímika', room: 'Sala 02 - Sto. Alberto Magno', students: 34, chefe: 'Maria Madalena Belo', contact: '+670 7711 0003' },
+              { id: '10-CSH', code: '10º CSH', name: '10.º Ano CSH', major: 'Ciências Sociais e Humanidades (CSH)', teacher: 'Mestra Jacinta Pereira', spec: 'Língua Portuguesa & Literatura', room: 'Sala 03 - S. Francisco Xavier', students: 32, chefe: 'Francisco Xavier dos Santos', contact: '+670 7711 0007' },
+              { id: '11-CT', code: '11º CT', name: '11.º Ano CT', major: 'Ciências Naturais (CT)', teacher: 'Mestre Domingos da Costa', spec: 'Kímika & Matemátika Avansadu', room: 'Sala 04 - Sto. Estevão', students: 30, chefe: 'Filomena Martins da Costa', contact: '+670 7711 0006' },
+              { id: '11-CSH', code: '11º CSH', name: '11.º Ano CSH', major: 'Ciências Sociais e Humanidades (CSH)', teacher: 'Sra. Beatriz da Conceição', spec: 'Istória & Sosiolojia', room: 'Sala 05 - Sta. Teresa de Calcutá', students: 28, chefe: 'Bernardo Martins Ximenes', contact: '+670 7711 0008' },
+              { id: '12-CT', code: '12º CT', name: '12.º Ano CT (Finalista)', major: 'Ciências Naturais (CT)', teacher: 'Mestre Lourenço dos Santos', spec: 'Matemátika & Prepara Ezame Nasionál', room: 'Sala 06 - N. S. de Fátima', students: 26, chefe: 'Gabriel de Jesus Pereira', contact: '+670 7711 0003' },
+              { id: '12-CSH', code: '12º CSH', name: '12.º Ano CSH (Finalista)', major: 'Ciências Sociais e Humanidades (CSH)', teacher: 'Mestra Jacinta Pereira', spec: 'Ekonomia & Filosofia', room: 'Sala 07 - S. Pedro Faber', students: 25, chefe: 'Filomena Barreto dos Reis', contact: '+670 7711 0007' },
+            ].map((turma) => (
+              <div key={turma.id} className="glass-panel" style={{ padding: '22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <div>
+                      <span className="badge badge-verified" style={{ marginBottom: '6px' }}>{turma.code}</span>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>{turma.name}</h3>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{turma.major}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span className="badge badge-gold">{turma.students} Alunu</span>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '14px', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-card)', marginBottom: '14px' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+                      Mestre Titulár de Turma (Wali Klase)
+                    </div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)', marginTop: '2px' }}>
+                      {turma.teacher}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-faint)' }}>{turma.spec} • {turma.contact}</div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem', color: 'var(--text-body)', marginBottom: '16px' }}>
+                    <div><strong>Sala Aula:</strong> {turma.room}</div>
+                    <div><strong>Xefe de Turma:</strong> {turma.chefe}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid var(--border-card)', paddingTop: '14px' }}>
+                  <button
+                    onClick={() => {
+                      setPautaClassroomId(turma.id);
+                      setShowPautaModal(true);
+                    }}
+                    className="btn btn-primary"
+                    style={{ flex: 1, justifyContent: 'center' }}
+                  >
+                    <Upload size={14} />
+                    <span>Upload Valor Turma</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -532,6 +640,12 @@ export default function MestrePage() {
           </div>
         </div>
       )}
+
+      <ExcelPautaUploadModal
+        isOpen={showPautaModal}
+        onClose={() => setShowPautaModal(false)}
+        initialClassroomId={pautaClassroomId}
+      />
     </div>
   );
 }

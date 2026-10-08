@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Menu, Bell, Cross } from 'lucide-react';
+import { Menu, Bell, Cross, FileSpreadsheet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import ExcelPautaUploadModal from '@/components/ExcelPautaUploadModal';
 
 interface MobileTopbarProps {
   onMenuOpen: () => void;
@@ -43,6 +44,7 @@ export default function MobileTopbar({ onMenuOpen, user }: MobileTopbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const title = getPageTitle(pathname);
+  const [showPautaModal, setShowPautaModal] = useState(false);
 
   return (
     <div className="mobile-topbar">
@@ -74,6 +76,27 @@ export default function MobileTopbar({ onMenuOpen, user }: MobileTopbarProps) {
 
       {/* Right actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button
+          onClick={() => setShowPautaModal(true)}
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '4px',
+            background: 'var(--primary)',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+          title="Upload Pauta Excel"
+          aria-label="Upload Pauta Excel"
+        >
+          <FileSpreadsheet size={17} />
+        </button>
+
         <button
           onClick={() => router.push('/dashboard/komunikasaun')}
           style={{
@@ -126,6 +149,12 @@ export default function MobileTopbar({ onMenuOpen, user }: MobileTopbarProps) {
           <Menu size={18} />
         </button>
       </div>
+
+      <ExcelPautaUploadModal
+        isOpen={showPautaModal}
+        onClose={() => setShowPautaModal(false)}
+        user={user}
+      />
     </div>
   );
 }

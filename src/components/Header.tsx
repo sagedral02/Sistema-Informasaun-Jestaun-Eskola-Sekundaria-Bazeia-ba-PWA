@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, UserCheck, Calendar, Shield, Sparkles } from 'lucide-react';
+import { Bell, UserCheck, Calendar, Shield, Sparkles, FileSpreadsheet } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
+import ExcelPautaUploadModal from '@/components/ExcelPautaUploadModal';
 
 interface HeaderProps {
   user?: any;
@@ -12,6 +13,7 @@ interface HeaderProps {
 export default function Header({ user }: HeaderProps) {
   const router = useRouter();
   const [switching, setSwitching] = useState(false);
+  const [showPautaModal, setShowPautaModal] = useState(false);
 
   // Quick role switch for demo and test evaluation
   const demoUsers = [
@@ -115,6 +117,23 @@ export default function Header({ user }: HeaderProps) {
           </select>
         </div>
 
+        {/* Quick Excel Pauta Upload Button for Teachers & Homeroom */}
+        <button
+          onClick={() => setShowPautaModal(true)}
+          className="btn btn-primary"
+          style={{
+            height: '36px',
+            padding: '0 12px',
+            fontSize: '0.78rem',
+            gap: '6px',
+            fontWeight: 700,
+          }}
+          title="Submete Pauta de Valor via EXCEL"
+        >
+          <FileSpreadsheet size={15} />
+          <span>Upload Valor Excel</span>
+        </button>
+
         {/* Notifications Icon */}
         <button
           onClick={() => router.push('/dashboard/komunikasaun')}
@@ -183,6 +202,12 @@ export default function Header({ user }: HeaderProps) {
           </div>
         </div>
       </div>
+
+      <ExcelPautaUploadModal
+        isOpen={showPautaModal}
+        onClose={() => setShowPautaModal(false)}
+        user={user}
+      />
     </header>
   );
 }

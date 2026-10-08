@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import {
   Users, Search, Plus, GraduationCap, Phone, MapPin, Calendar,
   CheckCircle2, UserCheck, Eye, ArrowRight, Download, RefreshCw,
-  Award, AlertCircle, FileSpreadsheet, X
+  Award, AlertCircle, FileSpreadsheet, X, CreditCard, QrCode, Printer, Star, History, ShieldCheck
 } from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
 export default function StudentsPage() {
-  const [activeTab, setActiveTab] = useState<'list' | 'promotion'>('list');
+  const [activeTab, setActiveTab] = useState<'list' | 'promotion' | 'bolseiru' | 'chefe_turma' | 'archive'>('list');
   const [students, setStudents] = useState<any[]>([]);
   const [classrooms, setClassrooms] = useState<any[]>([]);
   const [academicYears, setAcademicYears] = useState<any[]>([]);
@@ -22,6 +22,7 @@ export default function StudentsPage() {
   // Modal & Selection
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  const [showIdCardModal, setShowIdCardModal] = useState(false);
 
   // Form states for creating student
   const [fullName, setFullName] = useState('');
@@ -253,7 +254,7 @@ export default function StudentsPage() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-card)', paddingBottom: '8px' }}>
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-card)', paddingBottom: '8px', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('list')}
           className={`btn ${activeTab === 'list' ? 'btn-primary' : 'btn-ghost'}`}
@@ -273,6 +274,33 @@ export default function StudentsPage() {
         >
           <GraduationCap size={16} />
           <span>Promosaun & Graduasaun</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('bolseiru')}
+          className={`btn ${activeTab === 'bolseiru' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          <Award size={16} />
+          <span>Bolseiru (Beasiswa)</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('chefe_turma')}
+          className={`btn ${activeTab === 'chefe_turma' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          <Star size={16} />
+          <span>Xefe de Turma</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('archive')}
+          className={`btn ${activeTab === 'archive' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          <History size={16} />
+          <span>Arsivu Istóriku (2002–2026)</span>
         </button>
       </div>
 
@@ -346,14 +374,28 @@ export default function StudentsPage() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                          <button
-                            onClick={() => setSelectedStudent(s)}
-                            className="btn btn-secondary"
-                            style={{ padding: '4px 10px', fontSize: '0.78rem', minHeight: '32px' }}
-                          >
-                            <Eye size={13} />
-                            <span>Detallu 360</span>
-                          </button>
+                          <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={() => {
+                                setSelectedStudent(s);
+                                setShowIdCardModal(true);
+                              }}
+                              className="btn btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.78rem', minHeight: '32px' }}
+                              title="Kartaun Estudante Digital"
+                            >
+                              <CreditCard size={13} color="var(--primary)" />
+                              <span>Kartaun</span>
+                            </button>
+                            <button
+                              onClick={() => setSelectedStudent(s)}
+                              className="btn btn-secondary"
+                              style={{ padding: '4px 8px', fontSize: '0.78rem', minHeight: '32px' }}
+                            >
+                              <Eye size={13} />
+                              <span>Detallu 360</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -568,6 +610,174 @@ export default function StudentsPage() {
         </div>
       )}
 
+      {/* TAB 3: BOLSEIRU (BEASISWA) */}
+      {activeTab === 'bolseiru' && (
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                Tabela Estudante Benefisiáriu Bolseiru (Bolsa de Estudo)
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Kategoria: Mérito Académico, Institucionál Companhia de Jesus, no Apoio Sosiál Ermera
+              </p>
+            </div>
+            <div className="badge badge-gold">Ano Letivo 2026/2027</div>
+          </div>
+
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Nu. Estudante</th>
+                  <th>Naran Kompletu</th>
+                  <th>Klase</th>
+                  <th>Tipu Bolseiru</th>
+                  <th>Patrosinadór / Finansiador</th>
+                  <th>Kobertura (%)</th>
+                  <th>Média Mínima</th>
+                  <th>Estatutu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { no: 'STU-2026-005', name: 'Gabriel de Jesus Pereira', class: '10.º Ano CT-A', type: 'Bolsa de Mérito Académico', sponsor: 'Fundo de Bolsas NOSSEF', cov: '100% ($148.50)', gpa: '18.2 / 20', status: 'ATIVU' },
+                  { no: 'STU-2026-001', name: 'António Soares Guterres', class: '10.º Ano CT-A', type: 'Institucionál Companhia de Jesus', sponsor: 'Missão Jesuíta Railaco', cov: '100% ($148.50)', gpa: '16.8 / 20', status: 'ATIVU' },
+                  { no: 'STU-2026-002', name: 'Maria Madalena Belo', class: '10.º Ano CT-A', type: 'Apoio Sosiál Ermera', sponsor: 'Paróquia Nossa Senhora de Fátima', cov: '50% ($74.25)', gpa: '15.9 / 20', status: 'ATIVU' },
+                  { no: 'STU-2026-012', name: 'Filomena Barreto dos Reis', class: '11.º Ano CSH', type: 'Bolsa de Mérito Académico', sponsor: 'Fundo Governu RDTL (MEJD)', cov: '100% ($132.00)', gpa: '16.5 / 20', status: 'ATIVU' },
+                  { no: 'STU-2026-018', name: 'Bernardo Martins Ximenes', class: '12.º Ano CT', type: 'Institucionál Companhia de Jesus', sponsor: 'Missão Jesuíta Railaco', cov: '100% ($137.00)', gpa: '15.4 / 20', status: 'ATIVU' },
+                ].map((b, i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight: 700, color: 'var(--primary)' }}>{b.no}</td>
+                    <td style={{ fontWeight: 600 }}>{b.name}</td>
+                    <td>{b.class}</td>
+                    <td><span className="badge badge-verified">{b.type}</span></td>
+                    <td style={{ fontWeight: 600 }}>{b.sponsor}</td>
+                    <td style={{ fontWeight: 800, color: '#047857' }}>{b.cov}</td>
+                    <td>{b.gpa}</td>
+                    <td><span className="badge badge-success">{b.status}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: CHEFE DE TURMA */}
+      {activeTab === 'chefe_turma' && (
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                Tabela Xefe de Turma & Lideransa Estudantil por Rombel
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Líder alunu no akomodasaun perwalian iha 7 rombel NOSSEF Railaco
+              </p>
+            </div>
+            <div className="badge badge-verified">Mandatu 2026/2027</div>
+          </div>
+
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Klase & Turma</th>
+                  <th>Ramu / Área</th>
+                  <th>Xefe de Turma</th>
+                  <th>Vise-Xefe de Turma</th>
+                  <th>Mestre Titulár (Wali Klase)</th>
+                  <th>Sala Aula</th>
+                  <th>Alunu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { class: '10.º Ano CT-A', major: 'Ciências Naturais (CT)', chefe: 'António Soares Guterres', vise: 'Teresa Tilman dos Santos', mestre: 'Mestre Domingos da Costa', room: 'Sala 01 - S. Inácio', count: 35 },
+                  { class: '10.º Ano CT-B', major: 'Ciências Naturais (CT)', chefe: 'Maria Madalena Belo', vise: 'Mateus de Jesus', mestre: 'Mestre Lourenço dos Santos', room: 'Sala 02 - Sto. Alberto', count: 34 },
+                  { class: '10.º Ano CSH', major: 'Ciências Sociais (CSH)', chefe: 'Francisco Xavier dos Santos', vise: 'Ana Paula Guterres', mestre: 'Mestra Jacinta Pereira', room: 'Sala 03 - S. Francisco', count: 32 },
+                  { class: '11.º Ano CT', major: 'Ciências Naturais (CT)', chefe: 'Filomena Martins da Costa', vise: 'Manuel Soares', mestre: 'Mestre Domingos da Costa', room: 'Sala 04 - Sto. Estevão', count: 30 },
+                  { class: '11.º Ano CSH', major: 'Ciências Sociais (CSH)', chefe: 'Bernardo Martins Ximenes', vise: 'Clara da Silva', mestre: 'Sra. Beatriz da Conceição', room: 'Sala 05 - Sta. Teresa', count: 28 },
+                  { class: '12.º Ano CT', major: 'Ciências Naturais (CT)', chefe: 'Gabriel de Jesus Pereira', vise: 'Joana Martins', mestre: 'Mestre Lourenço dos Santos', room: 'Sala 06 - N. S. Fátima', count: 26 },
+                  { class: '12.º Ano CSH', major: 'Ciências Sociais (CSH)', chefe: 'Filomena Barreto dos Reis', vise: 'Afonso de Carvalho', mestre: 'Mestra Jacinta Pereira', room: 'Sala 07 - S. Pedro Faber', count: 25 },
+                ].map((c, idx) => (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 800, color: 'var(--primary)' }}>{c.class}</td>
+                    <td>{c.major}</td>
+                    <td style={{ fontWeight: 700 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Star size={13} color="#D97706" />
+                        <span>{c.chefe}</span>
+                      </div>
+                    </td>
+                    <td>{c.vise}</td>
+                    <td style={{ fontWeight: 600 }}>{c.mestre}</td>
+                    <td>{c.room}</td>
+                    <td><span className="badge badge-gold">{c.count}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: ARSIVU ISTORIKU 2002-2026 */}
+      {activeTab === 'archive' && (
+        <div className="glass-panel" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                Dadus Estudante & Alumni NOSSEF (2002–2026 • 24 Anos)
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Rekorde istóriku graduadu kada jerasaun desde fundasaun to'o ohin loron
+              </p>
+            </div>
+            <span className="badge badge-verified">Totál 1,480+ Alumni</span>
+          </div>
+
+          <div className="data-table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Tinan Graduasaun</th>
+                  <th>Jerasaun / Cohort</th>
+                  <th>Totál Alunu Graduadu</th>
+                  <th>Ramu CT (Siénsia)</th>
+                  <th>Ramu CSH (Sosiál)</th>
+                  <th>Pasajen Ezame Nasionál</th>
+                  <th>Diretór Eskola</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { year: '2025/2026', gen: 'Jerasaun XXIV', total: 68, ct: 36, csh: 32, pass: '100%', director: 'Pe. Guilhermino da Silva, SJ' },
+                  { year: '2024/2025', gen: 'Jerasaun XXIII', total: 65, ct: 34, csh: 31, pass: '98.5%', director: 'Pe. Guilhermino da Silva, SJ' },
+                  { year: '2023/2024', gen: 'Jerasaun XXII', total: 62, ct: 32, csh: 30, pass: '98.4%', director: 'Pe. Guilhermino da Silva, SJ' },
+                  { year: '2020/2021', gen: 'Jerasaun XIX', total: 58, ct: 30, csh: 28, pass: '96.6%', director: 'Pe. Joseph Phuong, SJ' },
+                  { year: '2015/2016', gen: 'Jerasaun XIV', total: 54, ct: 28, csh: 26, pass: '96.3%', director: 'Pe. Bong, SJ' },
+                  { year: '2010/2011', gen: 'Jerasaun IX', total: 48, ct: 25, csh: 23, pass: '95.8%', director: 'Pe. Bong, SJ' },
+                  { year: '2005/2006', gen: 'Jerasaun IV', total: 42, ct: 22, csh: 20, pass: '95.2%', director: 'Mestre Fundadór Railaco' },
+                  { year: '2002/2003', gen: 'Jerasaun I', total: 36, ct: 18, csh: 18, pass: '94.4%', director: 'Mestre Fundadór Railaco' },
+                ].map((a, idx) => (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 800, color: 'var(--primary)' }}>{a.year}</td>
+                    <td style={{ fontWeight: 700 }}>{a.gen}</td>
+                    <td style={{ fontWeight: 800 }}>{a.total} alunu</td>
+                    <td>{a.ct}</td>
+                    <td>{a.csh}</td>
+                    <td style={{ fontWeight: 700, color: '#047857' }}>{a.pass}</td>
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{a.director}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Student 360 Detail Modal */}
       {selectedStudent && (
         <div className="modal-backdrop" onClick={() => setSelectedStudent(null)}>
@@ -613,9 +823,140 @@ export default function StudentsPage() {
               <div style={{ fontWeight: 500, marginTop: '2px', color: 'var(--text-main)' }}>{selectedStudent.address || 'Railaco Vila, Ermera'}</div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border-card)', paddingTop: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-card)', paddingTop: '12px', alignItems: 'center' }}>
+              <button
+                onClick={() => setShowIdCardModal(true)}
+                className="btn btn-primary"
+                style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+              >
+                <CreditCard size={15} />
+                <span>Haree Kartaun Estudante Digital</span>
+              </button>
+
               <button onClick={() => setSelectedStudent(null)} className="btn btn-secondary">
                 {TETUN.actions.close}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Digital Student Card Modal (Kartaun Estudante Digital) */}
+      {showIdCardModal && selectedStudent && (
+        <div className="modal-backdrop" onClick={() => setShowIdCardModal(false)}>
+          <div
+            className="modal-box"
+            style={{ maxWidth: '480px', width: '95%', padding: '24px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CreditCard size={18} color="var(--primary)" />
+                <span>Kartaun Estudante Digital</span>
+              </div>
+              <button onClick={() => setShowIdCardModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Printable ID Card Design */}
+            <div
+              id="student-id-card"
+              style={{
+                borderRadius: '12px',
+                border: '2px solid #0284C7',
+                background: 'linear-gradient(135deg, #0369A1 0%, #0F172A 100%)',
+                color: '#FFFFFF',
+                padding: '20px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Card Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid rgba(255, 255, 255, 0.25)', paddingBottom: '10px', marginBottom: '14px' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0369A1', fontWeight: 900 }}>
+                  <GraduationCap size={20} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#BAE6FD' }}>
+                    República Democrática de Timor-Leste
+                  </div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: '-0.01em' }}>
+                    ESC. SEC. CATÓLICA NOSSA SENHORA DE FÁTIMA
+                  </div>
+                  <div style={{ fontSize: '0.65rem', color: '#E0F2FE' }}>
+                    Vila de Railaco, Ermera • Misi Jesuita
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Body */}
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                {/* 3x4 Photo Frame */}
+                <div
+                  style={{
+                    width: '84px',
+                    height: '110px',
+                    background: selectedStudent.gender === 'Feto' ? '#DC2626' : '#2563EB',
+                    borderRadius: '6px',
+                    border: '2px solid #FFFFFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    flexShrink: 0,
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <Users size={32} />
+                  <span style={{ fontSize: '0.65rem', fontWeight: 700, marginTop: '4px' }}>3 x 4 FOTO</span>
+                </div>
+
+                {/* Details */}
+                <div style={{ flex: 1, fontSize: '0.78rem', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '4px' }}>
+                    {selectedStudent.full_name}
+                  </div>
+                  <div style={{ color: '#BAE6FD' }}>
+                    NÓMERU NISN: <strong>{selectedStudent.student_no}</strong>
+                  </div>
+                  <div>
+                    Klase: <strong>{selectedStudent.classroom_name || '10.º Ano CT-A'}</strong>
+                  </div>
+                  <div>
+                    Área: <strong>{selectedStudent.major_name || 'Ciências Naturais'}</strong>
+                  </div>
+                  <div>
+                    Sexo: <strong>{selectedStudent.gender}</strong> • Moris: <strong>{selectedStudent.birth_date}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '4px' }}>
+                    Válidu: 2026/2027 • Timor-Leste
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Footer: QR Code & Verification */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.2)', paddingTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ShieldCheck size={16} color="#4ADE80" />
+                  <span style={{ fontSize: '0.68rem', color: '#E2E8F0' }}>Verifikasaun Di'ak (EMIS-TL)</span>
+                </div>
+                <div style={{ background: '#FFFFFF', padding: '4px 8px', borderRadius: '4px', color: '#0F172A', fontWeight: 800, fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <QrCode size={14} />
+                  <span>QR: {selectedStudent.student_no}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button className="btn btn-secondary" onClick={() => setShowIdCardModal(false)}>
+                Taka
+              </button>
+              <button className="btn btn-primary" onClick={() => window.print()}>
+                <Printer size={16} />
+                <span>Imprime Kartaun Digital</span>
               </button>
             </div>
           </div>
