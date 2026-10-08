@@ -1,22 +1,29 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, Search, Plus, GraduationCap, Phone, MapPin, Calendar, CheckCircle2, UserCheck, Eye } from 'lucide-react';
+import {
+  Users, Search, Plus, GraduationCap, Phone, MapPin, Calendar,
+  CheckCircle2, UserCheck, Eye, ArrowRight, Download, RefreshCw,
+  Award, AlertCircle, FileSpreadsheet, X
+} from 'lucide-react';
 import { TETUN } from '@/lib/tetun';
 
 export default function StudentsPage() {
+  const [activeTab, setActiveTab] = useState<'list' | 'promotion'>('list');
   const [students, setStudents] = useState<any[]>([]);
   const [classrooms, setClassrooms] = useState<any[]>([]);
+  const [academicYears, setAcademicYears] = useState<any[]>([]);
   const [gradeLevels, setGradeLevels] = useState<any[]>([]);
   const [majors, setMajors] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Modal & Selection
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
 
-  // Form states
+  // Form states for creating student
   const [fullName, setFullName] = useState('');
   const [gender, setGender] = useState('Mane');
   const [birthDate, setBirthDate] = useState('2008-04-12');
@@ -29,9 +36,52 @@ export default function StudentsPage() {
   const [guardianPhone, setGuardianPhone] = useState('+670 7712 1111');
   const [submitting, setSubmitting] = useState(false);
 
+  // Promotion tab states
+  const [promoFromYear, setPromoFromYear] = useState('');
+  const [promoToYear, setPromoToYear] = useState('');
+  const [promoClassroomId, setPromoClassroomId] = useState('');
+  const [promoTargetClassroomId, setPromoTargetClassroomId] = useState('');
+  const [promoData, setPromoData] = useState<any | null>(null);
+  const [promoRows, setPromoRows] = useState<any[]>([]);
+  const [loadingPromo, setLoadingPromo] = useState(false);
+  const [submittingPromo, setSubmittingPromo] = useState(false);
+  const [promoSuccessMsg, setPromoSuccessMsg] = useState<string | null>(null);
+
   useEffect(() => {
     loadData();
+    loadAuxData();
   }, [search, selectedClass]);
+
+  async function loadAuxData() {
+    try {
+      const [ayRes, clsRes, glRes, majRes] = await Promise.all([
+        fetch('/api/academic-years'),
+        fetch('/api/classrooms'),
+        fetch('/api/grade-levels'),
+        fetch('/api/majors'),
+      ]);
+      if (ayRes.ok) {
+        const ayData = await ayRes.json();
+        setAcademicYears(ayData);
+        const activeYear = ayData.find((y: any) => y.is_active) || ayData[0];
+        if (activeYear) {
+          setPromoFromYear(activeYear.id);
+          const otherYear = ayData.find((y: any) => y.id !== activeYear.id) || activeYear;
+          setPromoToYear(otherYear.id);
+        }
+      }
+      if (clsRes.ok) {
+        const clsData = await clsRes.json();
+        setClassrooms(clsData);
+        if (clsData.length > 0 && !classroomId) setClassroomId(clsData[0].id);
+        if (clsData.length > 0 && !promoClassroomId) setPromoClassroomId(clsData[0].id);
+      }
+      if (glRes.ok) setGradeLevels(await glRes.json());
+      if (majRes.ok) setMajors(await majRes.json());
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function loadData() {
     try {
@@ -39,25 +89,42 @@ export default function StudentsPage() {
       if (search) url += `search=${encodeURIComponent(search)}&`;
       if (selectedClass) url += `classroom_id=${encodeURIComponent(selectedClass)}&`;
 
-      const [stdRes, clsRes, glRes, majRes] = await Promise.all([
-        fetch(url),
-        fetch('/api/classrooms'),
-        fetch('/api/grade-levels'),
-        fetch('/api/majors'),
-      ]);
-
-      if (stdRes.ok) setStudents(await stdRes.json());
-      if (clsRes.ok) {
-        const clsData = await clsRes.json();
-        setClassrooms(clsData);
-        if (clsData.length > 0 && !classroomId) setClassroomId(clsData[0].id);
-      }
-      if (glRes.ok) setGradeLevels(await glRes.json());
-      if (majRes.ok) setMajors(await majRes.json());
+      const res = await fetch(url);
+      if (res.ok) setStudents(await res.json());
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadPromotionData() {
+    if (!promoClassroomId || !promoFromYear) return;
+    setLoadingPromo(true);
+    setPromoSuccessMsg(null);
+    try {
+      const res = await fetch(`/api/students/promote?classroom_id=${promoClassroomId}&academic_year_id=${promoFromYear}`);
+      if (res.ok) {
+        const data = await res.json();
+        setPromoData(data);
+        setPromoRows(
+          (data.students || []).map((s: any) => ({
+            student_id: s.id,
+            student_no: s.student_no,
+            full_name: s.full_name,
+            gender: s.gender,
+            average_score: s.average_score,
+            recommendation: s.recommendation,
+            action: s.recommendation,
+            to_classroom_id: promoTargetClassroomId || '',
+            notes: '',
+          }))
+        );
+      }
+    } catch (err) {
+      console.error('Error fetching promotion preview:', err);
+    } finally {
+      setLoadingPromo(false);
     }
   }
 
@@ -102,132 +169,409 @@ export default function StudentsPage() {
     }
   };
 
+  const handleExecutePromotion = async () => {
+    if (promoRows.length === 0) return;
+    setSubmittingPromo(true);
+    try {
+      const payload = {
+        from_academic_year_id: promoFromYear,
+        to_academic_year_id: promoToYear,
+        promotions: promoRows.map((r) => ({
+          student_id: r.student_id,
+          action: r.action,
+          to_classroom_id: r.action === 'GRADUADU' ? null : (r.to_classroom_id || promoTargetClassroomId),
+          notes: r.notes || `Promosaun kolektivu (${r.action})`,
+        })),
+      };
+
+      const res = await fetch('/api/students/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        setPromoSuccessMsg(json.message);
+        loadPromotionData();
+        loadData();
+      } else {
+        const errJson = await res.json();
+        alert(`Erro: ${errJson.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmittingPromo(false);
+    }
+  };
+
+  const exportStudentsCSV = () => {
+    const headers = ['Nu. Estudante', 'Naran Kompletu', 'Sexo', 'Klase', 'Status', 'Inan-Aman', 'Telefone'];
+    const rows = students.map((s) => [
+      `"${s.student_no || ''}"`,
+      `"${s.full_name || ''}"`,
+      `"${s.gender || ''}"`,
+      `"${s.classroom_name || ''}"`,
+      `"${s.status || ''}"`,
+      `"${s.guardian_name || ''}"`,
+      `"${s.guardian_phone || ''}"`,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `NOSSEF_Estudantes_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Page Header */}
+      <div className="page-header">
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            Dadus Estudante sira (Perfil 360)
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Base de dados ofisiál estudante, matríkula, enkaregadu de edukasaun, no istóriku klase
+          <h1 className="page-header-title">
+            Jestaun Estudante sira (Perfil 360)
+          </h1>
+          <p className="page-header-sub">
+            Base de dados ofisiál estudante, promosaun ano letivo, matríkula, no enkaregadu edukasaun
           </p>
         </div>
 
-        <button onClick={() => setShowModal(true)} className="btn btn-primary">
-          <Plus size={16} />
-          <span>Aumenta Estudante Foun</span>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button onClick={exportStudentsCSV} className="btn btn-secondary">
+            <Download size={15} />
+            <span>Esporta CSV</span>
+          </button>
+          <button onClick={() => setShowModal(true)} className="btn btn-primary">
+            <Plus size={16} />
+            <span>Aumenta Estudante</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '8px' }}>
+        <button
+          onClick={() => setActiveTab('list')}
+          className={`btn ${activeTab === 'list' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ borderRadius: 'var(--radius-full)', padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          <Users size={16} />
+          <span>Lista Estudante ({students.length})</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('promotion');
+            if (!promoData) loadPromotionData();
+          }}
+          className={`btn ${activeTab === 'promotion' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ borderRadius: 'var(--radius-full)', padding: '8px 18px', fontSize: '0.85rem' }}
+        >
+          <GraduationCap size={16} />
+          <span>Promosaun & Graduasaun</span>
         </button>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buka tuir naran ka númeru estudante (NOSSEF)..."
-            style={{ paddingLeft: '38px' }}
-          />
-          <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '11px' }} />
-        </div>
+      {/* TAB 1: LISTA ESTUDANTE */}
+      {activeTab === 'list' && (
+        <>
+          {/* Filter and Search Bar */}
+          <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buka tuir naran ka númeru estudante..."
+                style={{ paddingLeft: '38px', height: '40px' }}
+              />
+              <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '11px' }} />
+            </div>
 
-        <div style={{ width: '220px' }}>
-          <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
-            <option value="">Klase Hotu-Hotu</option>
-            {classrooms.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.code})
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+            <div style={{ width: '220px' }}>
+              <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} style={{ height: '40px' }}>
+                <option value="">Klase Hotu-Hotu</option>
+                {classrooms.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.code})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-      {/* Students Table */}
-      <div className="glass-panel" style={{ padding: '24px' }}>
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Nu. Estudante</th>
-                <th>Naran Kompletu</th>
-                <th>Sexo</th>
-                <th>Klase & Sala Aula</th>
-                <th>Área / Departamentu</th>
-                <th>Enkaregadu (Inan-Aman)</th>
-                <th>Status</th>
-                <th>Aksaun</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.length > 0 ? (
-                students.map((s) => (
-                  <tr key={s.id}>
-                    <td style={{ fontWeight: 700, color: 'var(--gold-light)' }}>{s.student_no}</td>
-                    <td style={{ fontWeight: 600 }}>{s.full_name}</td>
-                    <td>{s.gender}</td>
-                    <td>
-                      <span className="badge badge-info">{s.classroom_name || 'Seidauk iha Klase'}</span>
-                    </td>
-                    <td>{s.major_code || 'CT'}</td>
-                    <td>
-                      <div>{s.guardian_name || '-'}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-faint)' }}>{s.guardian_phone || ''}</div>
-                    </td>
-                    <td>
-                      <span className="badge badge-success">{s.status}</span>
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => setSelectedStudent(s)}
-                        className="btn btn-secondary"
-                        style={{ padding: '6px 10px', fontSize: '0.775rem' }}
-                      >
-                        <Eye size={14} />
-                        <span>Detallu 360</span>
-                      </button>
-                    </td>
+          {/* Students Table */}
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <div className="data-table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nu. Estudante</th>
+                    <th>Naran Kompletu</th>
+                    <th>Sexo</th>
+                    <th>Klase & Sala</th>
+                    <th>Área</th>
+                    <th>Enkaregadu</th>
+                    <th>Status</th>
+                    <th style={{ textAlign: 'right' }}>Aksaun</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
-                    La hetan dadus estudante ruma.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {students.length > 0 ? (
+                    students.map((s) => (
+                      <tr key={s.id}>
+                        <td style={{ fontWeight: 700, color: 'var(--gold-light)' }}>{s.student_no}</td>
+                        <td style={{ fontWeight: 600 }}>{s.full_name}</td>
+                        <td>{s.gender}</td>
+                        <td>
+                          <span className="badge badge-info">{s.classroom_name || 'Seidauk iha Klase'}</span>
+                        </td>
+                        <td>{s.major_code || 'CT'}</td>
+                        <td>
+                          <div>{s.guardian_name || '-'}</div>
+                          <div style={{ fontSize: '0.725rem', color: 'var(--text-faint)' }}>{s.guardian_phone || ''}</div>
+                        </td>
+                        <td>
+                          <span className={`badge ${s.status === 'GRADUADU' ? 'badge-gold' : 'badge-success'}`}>
+                            {s.status}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            onClick={() => setSelectedStudent(s)}
+                            className="btn btn-secondary"
+                            style={{ padding: '5px 10px', fontSize: '0.75rem' }}
+                          >
+                            <Eye size={13} />
+                            <span>Detallu 360</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
+                        {loading ? 'Hein ruma...' : 'La hetan dadus estudante ruma.'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* TAB 2: PROMOSAUN & GRADUASAUN */}
+      {activeTab === 'promotion' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {/* Controls Panel */}
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <GraduationCap size={18} color="var(--gold-primary)" />
+              <span>Konfigurasaun Tranzisaun & Promosaun Ano Letivo</span>
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', alignItems: 'flex-end' }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  Ano Letivo Orixinál
+                </label>
+                <select value={promoFromYear} onChange={(e) => setPromoFromYear(e.target.value)}>
+                  {academicYears.map((y) => (
+                    <option key={y.id} value={y.id}>
+                      {y.name} {y.is_active ? '(Ativu)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  Klase atu Avalia
+                </label>
+                <select value={promoClassroomId} onChange={(e) => setPromoClassroomId(e.target.value)}>
+                  {classrooms.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  Ano Letivo Destinu
+                </label>
+                <select value={promoToYear} onChange={(e) => setPromoToYear(e.target.value)}>
+                  {academicYears.map((y) => (
+                    <option key={y.id} value={y.id}>
+                      {y.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  Sala/Klase Destinu Padraun
+                </label>
+                <select value={promoTargetClassroomId} onChange={(e) => setPromoTargetClassroomId(e.target.value)}>
+                  <option value="">Hili Klase Destinu...</option>
+                  {classrooms.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <button
+                  onClick={loadPromotionData}
+                  disabled={loadingPromo}
+                  className="btn btn-secondary"
+                  style={{ width: '100%', height: '42px' }}
+                >
+                  <RefreshCw size={14} className={loadingPromo ? 'spin' : ''} />
+                  <span>Kalkula Promosaun</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {promoSuccessMsg && (
+            <div className="glass-panel" style={{ padding: '14px 20px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <CheckCircle2 size={18} color="#10b981" />
+              <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#34d399' }}>{promoSuccessMsg}</span>
+            </div>
+          )}
+
+          {/* Promotion Preview Table */}
+          {promoData && (
+            <div className="glass-panel" style={{ padding: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 700 }}>
+                    Rezultadu Avaliasaun: {promoData.currentClass?.name} ({promoRows.length} Estudante)
+                  </h4>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Regra NOSSEF: Média ≥ 10.0 PASSA / GRADUA. Média &lt; 10.0 RETEIN (Repete).
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleExecutePromotion}
+                  disabled={submittingPromo || promoRows.length === 0}
+                  className="btn btn-primary"
+                >
+                  <CheckCircle2 size={16} />
+                  <span>{submittingPromo ? 'Prosesa hela...' : 'Aprova & Executa Promosaun'}</span>
+                </button>
+              </div>
+
+              <div className="data-table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Nu. Estudante</th>
+                      <th>Naran Kompletu</th>
+                      <th>Sexo</th>
+                      <th>Média Jerál</th>
+                      <th>Rekomendasaun Sistema</th>
+                      <th>Desizaun Final</th>
+                      <th>Klase Destinu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {promoRows.length > 0 ? (
+                      promoRows.map((row, idx) => (
+                        <tr key={row.student_id}>
+                          <td style={{ fontWeight: 700, color: 'var(--gold-light)' }}>{row.student_no}</td>
+                          <td style={{ fontWeight: 600 }}>{row.full_name}</td>
+                          <td>{row.gender}</td>
+                          <td>
+                            <span style={{ fontWeight: 700, color: row.average_score >= 10.0 ? '#10b981' : '#ef4444' }}>
+                              {row.average_score.toFixed(1)} / 20.0
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`badge ${row.recommendation === 'PASSA' ? 'badge-success' : row.recommendation === 'GRADUADU' ? 'badge-gold' : 'badge-danger'}`}>
+                              {row.recommendation}
+                            </span>
+                          </td>
+                          <td>
+                            <select
+                              value={row.action}
+                              onChange={(e) => {
+                                const newAction = e.target.value;
+                                setPromoRows((prev) =>
+                                  prev.map((r, i) => (i === idx ? { ...r, action: newAction } : r))
+                                );
+                              }}
+                              style={{ padding: '6px 10px', height: '34px', fontSize: '0.8rem' }}
+                            >
+                              <option value="PASSA">PASSA (Promote)</option>
+                              <option value="RETEIN">RETEIN (Repete)</option>
+                              <option value="GRADUADU">GRADUADU (Graduated)</option>
+                            </select>
+                          </td>
+                          <td>
+                            {row.action === 'GRADUADU' ? (
+                              <span style={{ fontSize: '0.78rem', color: 'var(--gold-light)' }}>Graduadu husi NOSSEF</span>
+                            ) : (
+                              <select
+                                value={row.to_classroom_id || promoTargetClassroomId}
+                                onChange={(e) => {
+                                  const cid = e.target.value;
+                                  setPromoRows((prev) =>
+                                    prev.map((r, i) => (i === idx ? { ...r, to_classroom_id: cid } : r))
+                                  );
+                                }}
+                                style={{ padding: '6px 10px', height: '34px', fontSize: '0.8rem' }}
+                              >
+                                <option value="">Padraun ({promoTargetClassroomId ? 'Hili tiha ona' : 'Seidauk'})</option>
+                                {classrooms.map((c) => (
+                                  <option key={c.id} value={c.id}>
+                                    {c.name} ({c.code})
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
+                          La iha estudante ativu iha klase ne&#39;e.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Student 360 Detail Modal */}
       {selectedStudent && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '600px', padding: '32px' }}>
+        <div className="modal-backdrop" onClick={() => setSelectedStudent(null)}>
+          <div className="modal-box glass-panel" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div>
                 <span className="badge badge-gold">{selectedStudent.student_no}</span>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginTop: '6px' }}>{selectedStudent.full_name}</h3>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '6px' }}>{selectedStudent.full_name}</h3>
               </div>
               <div className="badge badge-success">{selectedStudent.status}</div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
               <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Klase & Sala Aula</div>
                 <div style={{ fontWeight: 600, marginTop: '2px' }}>{selectedStudent.classroom_name || '-'}</div>
@@ -263,24 +607,12 @@ export default function StudentsPage() {
 
       {/* Add Student Modal */}
       {showModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '540px', padding: '32px' }}>
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-box glass-panel" style={{ maxWidth: '540px' }} onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
               Rejistu Estudante Foun
             </h3>
-            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '20px' }}>
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '18px' }}>
               Prenxe dadus estudante no atribui ba klase ativu
             </p>
 

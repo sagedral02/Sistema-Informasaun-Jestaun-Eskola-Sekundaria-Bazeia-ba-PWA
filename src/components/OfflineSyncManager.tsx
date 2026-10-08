@@ -75,18 +75,7 @@ export default function OfflineSyncManager() {
   return (
     <>
       {/* Floating Offline / Sync Status Indicator */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          alignItems: 'flex-end',
-        }}
-      >
+      <div className="pwa-status-pill">
         {syncSuccessMessage && (
           <div
             className="animate-fade-in"
